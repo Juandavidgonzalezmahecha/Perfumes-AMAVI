@@ -1,0 +1,27 @@
+/* Estilos generales de Perfumes-AMAVI */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #faf5f0;
+  color: #333;
+  text-align: center;
+}
+
+header {
+  background: #b8860b;
+  color: white;
+  padding: 20px;
+}
+
+h1 {
+  margin: 0;
+}
+
+img {
+  max-width: 250px;
+  margin: 20px auto;
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
