@@ -1,29 +1,265 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perfumes-AMAVI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Amavi — Perfumería</title>
 
-  <!-- Enlazar CSS externo -->
-  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Estilos: ruta adaptada a tu estructura -->
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🌸 Perfumes-AMAVI</h1>
-    <p>Si ves esta página, ¡el deploy con GitHub Pages funcionó! 🚀</p>
+  <!-- Header (organismo) -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="brand" aria-label="Amavi — perfumería">
+        <img src="assets/img/Imagenperfume1.jpg" alt="Logo Amavi" class="brand__logo" />
+        <span class="brand__name">AMAVI</span>
+      </a>
 
-    <!-- Imagen de prueba -->
-    <img src="assets/img/Imagenperfume1.jpg" alt="Perfume 1">
-  </div>
+      <!-- Search (molécula) -->
+      <form class="searchbar" role="search" aria-label="Buscar productos">
+        <label for="search" class="visually-hidden">Buscar</label>
+        <input id="search" class="input input--search" type="search" placeholder="Buscar fragancias, sets, regalos..." />
+        <button type="submit" class="btn btn--icon" aria-label="Buscar">🔍</button>
+      </form>
 
-  <!-- Enlazar JS externo -->
-  <script src="assets/js/app.js"></script>
+      <nav class="nav" aria-label="Navegación principal">
+        <a class="nav__link" href="#">Novedades</a>
+        <a class="nav__link" href="#">Fragancias</a>
+        <a class="nav__link" href="#">Sets</a>
+        <a class="nav__link" href="#">Ofertas</a>
+      </nav>
+
+      <div class="actions" aria-hidden="false">
+        <button class="btn btn--ghost">Mi cuenta</button>
+        <button class="btn btn--cart" aria-label="Ver carrito">
+          🛒 <span class="badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <h1 class="hero-title">Fragancias que cuentan tu historia</h1>
+        <p class="hero-sub">Colección especial — notas florales, amaderadas y gourmand. Elige tu aroma.</p>
+        <div class="hero-ctas">
+          <a class="btn btn--primary" href="#productos">Explorar colección</a>
+          <a class="btn btn--ghost" href="#newsletter">Suscribirme</a>
+        </div>
+      </div>
+
+      <div class="hero-media">
+        <!-- Usa cualquier imagen de assets/img como hero -->
+        <img src="assets/img/Imagenperfume2.jpg" alt="Colección Amavi" class="hero-image" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Categorías (moléculas pequeñas) -->
+  <section class="categories container" aria-label="Categorías">
+    <div class="category">
+      <img src="assets/img/Imagenperfume19.png" alt="" class="category__icon" />
+      <p class="category__title">Floral</p>
+    </div>
+    <div class="category">
+      <img src="assets/img/Imagenperfume20.png" alt="" class="category__icon" />
+      <p class="category__title">Amaderado</p>
+    </div>
+    <div class="category">
+      <img src="assets/img/Imagenperfume21.png" alt="" class="category__icon" />
+      <p class="category__title">Gourmand</p>
+    </div>
+    <div class="category">
+      <img src="assets/img/Imagenperfume22.png" alt="" class="category__icon" />
+      <p class="category__title">Sets</p>
+    </div>
+  </section>
+
+  <!-- Grid de productos -->
+  <main class="container main-content" id="productos" role="main">
+    <header class="section-header">
+      <h2>Nuestros productos</h2>
+      <p class="muted">Envío gratis en compras superiores a $80.000</p>
+    </header>
+
+    <div class="product-grid" role="list">
+      <!-- ProductCard 1 -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume3.jpg" alt="Perfume 1 — Rose Amavi" />
+          <span class="badge badge--accent">Nuevo</span>
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Rose Amavi — EDP 50 ml</h3>
+          <p class="product-desc">Notas: rosa, bergamota y sándalo.</p>
+          <div class="product-footer">
+            <span class="price">$89.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ProductCard 2 -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume4.jpg" alt="Perfume 2 — Amber Glow" />
+          <span class="badge badge--sale">-20%</span>
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Amber Glow — EDP 100 ml</h3>
+          <p class="product-desc">Ambar, vainilla y cedro.</p>
+          <div class="product-footer">
+            <span class="price"><span class="price--old">$130.000</span> $104.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ProductCard 3 -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume5.jpg" alt="Set regalo Amavi" />
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Set Regalo — Mini Colección</h3>
+          <p class="product-desc">Tres fragancias en miniatura; caja premium.</p>
+          <div class="product-footer">
+            <span class="price">$75.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ProductCard 4 (duplicar según necesites) -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume6.jpg" alt="Perfume 4" />
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Velvet Night — EDP 50 ml</h3>
+          <p class="product-desc">Notas profundas y orientales.</p>
+          <div class="product-footer">
+            <span class="price">$99.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ProductCard 5 -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume7.jpg" alt="Perfume 5" />
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Citrus Bloom — EDT 50 ml</h3>
+          <p class="product-desc">Fresco, cítrico y veraniego.</p>
+          <div class="product-footer">
+            <span class="price">$76.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ProductCard 6 -->
+      <article class="product-card" role="listitem">
+        <div class="product-card__media">
+          <img src="assets/img/Imagenperfume8.jpg" alt="Perfume 6" />
+        </div>
+        <div class="product-card__body">
+          <h3 class="product-title">Ocean Mist — EDP 75 ml</h3>
+          <p class="product-desc">Aroma fresco con notas marinas.</p>
+          <div class="product-footer">
+            <span class="price">$88.000</span>
+            <div class="product-actions">
+              <button class="btn btn--small btn--outline">Ver</button>
+              <button class="btn btn--small btn--primary">Añadir</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Añade más .product-card usando Imagenperfume9.jpg ... Imagenperfume29.png -->
+    </div>
+  </main>
+
+  <!-- Newsletter -->
+  <section class="newsletter container" id="newsletter">
+    <div class="newsletter-card">
+      <div>
+        <h3>Únete a Amavi</h3>
+        <p class="muted">Recibe novedades, descuentos y lanzamientos exclusivos.</p>
+      </div>
+
+      <form class="newsletter-form" aria-label="Suscripción newsletter">
+        <input class="input" type="email" placeholder="tu@email.com" required />
+        <button class="btn btn--primary">Suscribirme</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-col">
+        <a href="#" class="brand brand--footer">
+          <img src="assets/img/Imagenperfume1.jpg" alt="Amavi" class="brand__logo" />
+          <span class="brand__name">AMAVI</span>
+        </a>
+        <p class="muted">Perfumería boutique — fragancias artesanales.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Enlaces</h4>
+        <ul class="footer-links">
+          <li><a href="#">Términos</a></li>
+          <li><a href="#">Política de privacidad</a></li>
+          <li><a href="#">Envíos</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <address class="contact">
+          <div>📍 Calle Falsa 123, Bogotá</div>
+          <div>📞 +57 300 000 0000</div>
+          <div>✉️ hola@amavi.co</div>
+        </address>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p class="muted small">© <span id="year"></span> Amavi. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Optional JS: referencia a tu archivo si existe -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="assets/js/app.js" defer></script>
 </body>
 </html>
-
-
-
-
-
-
