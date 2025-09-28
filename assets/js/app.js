@@ -9,50 +9,49 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadView(view) {
     try {
       const res = await fetch(`./views/${view}.html`);
+      if (!res.ok) throw new Error("Vista no encontrada: " + view);
       const html = await res.text();
-      document.getElementById("app").innerHTML = html;
+      app.innerHTML = html;
 
-      // Inicializar eventos específicos después de cargar la vista
+      // Inicializar eventos de esa vista
       initEvents(view);
     } catch (error) {
       console.error("Error cargando la vista:", error);
-      app.innerHTML = `<p>Error cargando la vista <strong>${view}</strong>.</p>`;
+      app.innerHTML = `<p class="center">⚠️ No se pudo cargar <strong>${view}</strong>.</p>`;
     }
   }
 
-  // --- Manejo de rutas ---
+  // --- Router principal ---
   function router() {
     const hash = window.location.hash.replace("#", "") || "login";
     loadView(hash);
   }
 
-  // Escuchar cambios en el hash de la URL
+  // Escuchar cambios en hash y cargar vista inicial
   window.addEventListener("hashchange", router);
   window.addEventListener("load", router);
 
-  // --- Eventos personalizados por vista ---
+  // --- Inicializar eventos por vista ---
   function initEvents(view) {
-    if (view === "home") {
-      // Ejemplo de evento en Home
-      const perfumeImg = document.querySelector("img");
-      if (perfumeImg) {
-        perfumeImg.addEventListener("click", () => {
-          alert("Has hecho clic en un perfume 🌸");
-        });
-      }
-    }
-
     if (view === "login") {
-      // Ejemplo de evento en Login
       const form = document.querySelector(".login-form");
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          alert("Inicio de sesión exitoso ✅");
-          window.location.hash = "home"; // Redirige a Home después del login
+          const email = form.querySelector('input[type="email"]').value;
+          const pass = form.querySelector('input[type="password"]').value;
+
+          if (email && pass) {
+            alert("Inicio de sesión exitoso ✅ Bienvenido " + email);
+            // Cuando tengas el Home listo, lo rediriges así:
+            // window.location.hash = "home";
+          } else {
+            alert("Por favor completa todos los campos ❌");
+          }
         });
       }
     }
   }
 });
+
 
