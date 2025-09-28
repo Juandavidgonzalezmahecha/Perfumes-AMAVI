@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Router SPA ---
   async function loadView(view) {
     try {
-      const res = await fetch(`views/${view}.html`);
+      const res = await fetch(`./views/${view}.html`);
       const html = await res.text();
-      app.innerHTML = html;
+      document.getElementById("app").innerHTML = html;
 
       // Inicializar eventos específicos después de cargar la vista
       initEvents(view);
