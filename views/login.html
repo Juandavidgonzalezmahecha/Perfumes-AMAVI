@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Amavi — Login</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="auth-body">
+  <main class="auth-container" role="main">
+    <!-- Branding -->
+    <a href="/" class="brand auth-brand" aria-label="Volver al inicio">
+      <img src="../assets/img/Imagenperfume1.jpg" alt="Amavi" class="brand__logo" />
+      <span class="brand__name">AMAVI</span>
+    </a>
+
+    <!-- Card de Login -->
+    <section class="auth-card">
+      <h1 class="auth-title">Inicia sesión</h1>
+      <form class="auth-form" aria-label="Formulario de inicio de sesión">
+        
+        <!-- Email -->
+        <label for="email" class="auth-label">Correo electrónico</label>
+        <input id="email" type="email" class="input" placeholder="tu@email.com" required>
+        
+        <!-- Contraseña -->
+        <label for="password" class="auth-label">Contraseña</label>
+        <input id="password" type="password" class="input" placeholder="••••••" required>
+
+        <!-- Opciones -->
+        <div class="auth-options">
+          <label>
+            <input type="checkbox"> Recuérdame
+          </label>
+          <a href="#" class="auth-link">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" class="btn btn--primary auth-btn">Ingresar</button>
+      </form>
+
+      <!-- Enlace alternativo -->
+      <p class="auth-alt">
+        ¿No tienes cuenta? <a href="/register" class="auth-link internal-link">Crear cuenta</a>
+      </p>
+    </section>
+  </main>
+</body>
+</html>
