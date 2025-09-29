@@ -1,4 +1,5 @@
-// Script base para Perfumes-AMAVI
+// assets/js/app.js
+// Script base para Perfumes-AMAVI SPA
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🌸 Perfumes-AMAVI está funcionando 🚀");
 
@@ -53,16 +54,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
           errorBox.hidden = true;
 
-          // Mensaje de bienvenida
+          // Simulación login
           alert("Inicio de sesión exitoso ✅ Bienvenido " + email);
 
-          // Cuando tengas el Home listo, redirige:
+          // Redirección futura al Home (cuando esté listo)
           // window.location.hash = "home";
+        });
+      }
+    }
+
+    if (view === "register") {
+      const regForm = document.querySelector(".register-form");
+      if (regForm) {
+        regForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          alert("Registro enviado 🚀");
         });
       }
     }
   }
 });
-
-
-
