@@ -6,29 +6,27 @@
   <title>Amavi — Login</title>
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body>
+<body class="auth-body">
   <!-- Skip link -->
   <a class="skip-link visually-hidden" href="#login-form">Saltar al formulario</a>
 
   <main id="auth-main" class="login-layout" role="main" aria-labelledby="login-title">
-    <!-- Lado izquierdo: formulario -->
+    <!-- Columna izquierda (Card de login) -->
     <section class="login-card" aria-labelledby="login-title">
       <!-- Branding -->
-      <a href="/" class="brand auth-brand" aria-label="Volver al inicio">
+      <a href="#/" class="brand auth-brand" aria-label="Volver al inicio">
         <img src="../assets/img/Imagenperfume1.jpg" alt="Logo Amavi" class="brand__logo" loading="lazy" />
         <span class="brand__name">AMAVI</span>
       </a>
 
-      <!-- Título -->
-      <h1 id="login-title" class="login-title">Iniciar sesión</h1>
-      <p id="login-desc" class="muted">Bienvenido de nuevo, ingresa tus credenciales.</p>
+      <h1 id="login-title" class="login-title">Inicia sesión</h1>
+      <p id="login-desc" class="muted">Ingresa con tu correo electrónico y contraseña.</p>
 
-      <!-- Formulario -->
       <form id="login-form" class="auth-form login-form"
             method="post" action="#"
             novalidate aria-describedby="login-desc"
             autocomplete="on">
-
+        
         <!-- Email -->
         <div class="form-row">
           <label for="email" class="auth-label">Correo electrónico</label>
@@ -37,7 +35,7 @@
                  required autocomplete="email" inputmode="email"
                  aria-required="true" />
         </div>
-
+        
         <!-- Contraseña -->
         <div class="form-row">
           <label for="password" class="auth-label">Contraseña</label>
@@ -56,11 +54,11 @@
           <a href="#/forgot" class="auth-link">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <!-- Error accesible -->
+        <!-- Mensaje de error accesible -->
         <div id="login-error" class="form-error" role="alert" aria-live="assertive" hidden></div>
 
         <!-- Botón -->
-        <button type="submit" class="btn btn--primary login-btn">Ingresar</button>
+        <button type="submit" class="login-btn">Ingresar</button>
       </form>
 
       <!-- Enlace alternativo -->
@@ -70,12 +68,13 @@
       </p>
     </section>
 
-    <!-- Lado derecho: ilustración -->
-    <section class="login-hero" aria-hidden="true">
-      <img src="../assets/img/login-illustration.png" alt="" class="login-illustration" />
-    </section>
+    <!-- Columna derecha (Ilustración) -->
+    <aside class="login-hero">
+      <img src="../assets/img/GroupLogin.png" alt="Ilustración Login Amavi" class="login-illustration" loading="lazy">
+    </aside>
   </main>
 </body>
 </html>
+
 
 
