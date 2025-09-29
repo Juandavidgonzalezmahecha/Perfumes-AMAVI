@@ -35,23 +35,34 @@ document.addEventListener("DOMContentLoaded", () => {
   function initEvents(view) {
     if (view === "login") {
       const form = document.querySelector(".login-form");
+      const errorBox = document.getElementById("login-error");
+
       if (form) {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          const email = form.querySelector('input[type="email"]').value;
-          const pass = form.querySelector('input[type="password"]').value;
+          const email = form.querySelector("#email").value.trim();
+          const pass = form.querySelector("#password").value.trim();
 
-          if (email && pass) {
-            alert("Inicio de sesión exitoso ✅ Bienvenido " + email);
-            // Cuando tengas el Home listo, lo rediriges así:
-            // window.location.hash = "home";
-          } else {
-            alert("Por favor completa todos los campos ❌");
+          // Validación accesible
+          if (!email || !pass) {
+            errorBox.textContent = "Por favor completa todos los campos ❌";
+            errorBox.hidden = false;
+            errorBox.focus();
+            return;
           }
+
+          errorBox.hidden = true;
+
+          // Mensaje de bienvenida
+          alert("Inicio de sesión exitoso ✅ Bienvenido " + email);
+
+          // Cuando tengas el Home listo, redirige:
+          // window.location.hash = "home";
         });
       }
     }
   }
 });
+
 
 
