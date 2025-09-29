@@ -6,75 +6,50 @@
   <title>Amavi — Login</title>
   <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body class="auth-body">
-  <!-- Skip link -->
-  <a class="skip-link visually-hidden" href="#login-form">Saltar al formulario</a>
+<body class="login-body">
+  <main class="login-layout">
+    
+    <!-- Columna izquierda (card con logo + form) -->
+    <section class="login-card">
+      <div class="login-logo">
+        <img src="../assets/img/LOGOAMAVI.png" alt="Logo Amavi" />
+      </div>
 
-  <main id="auth-main" class="login-layout" role="main" aria-labelledby="login-title">
-    <!-- Columna izquierda (Card de login) -->
-    <section class="login-card" aria-labelledby="login-title">
-      <!-- Branding -->
-      <a href="#/" class="brand auth-brand" aria-label="Volver al inicio">
-        <img src="../assets/img/Imagenperfume1.jpg" alt="Logo Amavi" class="brand__logo" loading="lazy" />
-        <span class="brand__name">AMAVI</span>
-      </a>
+      <h1 class="login-title">Iniciar sesión</h1>
+      <p class="login-sub">Ingresa con tu correo electrónico y contraseña.</p>
 
-      <h1 id="login-title" class="login-title">Inicia sesión</h1>
-      <p id="login-desc" class="muted">Ingresa con tu correo electrónico y contraseña.</p>
+      <form id="login-form" class="login-form" novalidate>
+        <label for="email" class="login-label">Correo electrónico</label>
+        <input id="email" type="email" class="login-input" placeholder="tu@email.com" required>
 
-      <form id="login-form" class="auth-form login-form"
-            method="post" action="#"
-            novalidate aria-describedby="login-desc"
-            autocomplete="on">
-        
-        <!-- Email -->
-        <div class="form-row">
-          <label for="email" class="auth-label">Correo electrónico</label>
-          <input id="email" name="email" type="email" class="input"
-                 placeholder="tu@email.com"
-                 required autocomplete="email" inputmode="email"
-                 aria-required="true" />
-        </div>
-        
-        <!-- Contraseña -->
-        <div class="form-row">
-          <label for="password" class="auth-label">Contraseña</label>
-          <input id="password" name="password" type="password" class="input"
-                 placeholder="••••••"
-                 required autocomplete="current-password" minlength="8"
-                 aria-required="true" />
-        </div>
+        <label for="password" class="login-label">Contraseña</label>
+        <input id="password" type="password" class="login-input" placeholder="••••••••" required>
 
-        <!-- Opciones -->
-        <div class="auth-options" role="group" aria-label="Opciones de sesión">
-          <label class="checkbox-inline">
-            <input id="remember" name="remember" type="checkbox" />
+        <div class="login-options">
+          <label class="checkbox">
+            <input type="checkbox" id="remember">
             <span>Recuérdame</span>
           </label>
-          <a href="#/forgot" class="auth-link">¿Olvidaste tu contraseña?</a>
+          <a href="#/forgot" class="login-link">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <!-- Mensaje de error accesible -->
-        <div id="login-error" class="form-error" role="alert" aria-live="assertive" hidden></div>
-
-        <!-- Botón -->
-        <button type="submit" class="login-btn">Ingresar</button>
+        <button type="submit" class="btn-login">Ingresar</button>
       </form>
 
-      <!-- Enlace alternativo -->
-      <p class="auth-alt">
-        ¿No tienes cuenta?
-        <a href="#/register" class="auth-link internal-link">Crear cuenta</a>
+      <p class="login-alt">¿No tienes cuenta?
+        <a href="#/register" class="login-link">Regístrate</a>
       </p>
     </section>
 
-    <!-- Columna derecha (Ilustración) -->
-    <aside class="login-hero">
-      <img src="../assets/img/GroupLogin.png" alt="Ilustración Login Amavi" class="login-illustration" loading="lazy">
+    <!-- Columna derecha (ilustración) -->
+    <aside class="login-illustration">
+      <img src="../assets/img/GroupLogin.png" alt="Ilustración Login Amavi" />
     </aside>
+
   </main>
 </body>
 </html>
+
 
 
 
