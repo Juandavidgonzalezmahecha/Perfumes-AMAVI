@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (view === "login" || view === "register") {
         path = `./views/${view}.html`;
       } else if (view === "home") {
-        // home está dentro de views/pagina-principal/
-        path = `./views/pagina-principal/home.html`;
+        // home está dentro de views/pagina_principal/
+        path = `./views/pagina_principal/home.html`;
       } else {
         throw new Error("Vista desconocida: " + view);
       }
@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Inicializar eventos de cada vista ---
   function initEvents(view) {
+    // --- LOGIN ---
     if (view === "login") {
       const form = document.querySelector(".login-form");
       if (!form) return;
@@ -77,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // --- REGISTER ---
     if (view === "register") {
       const form = document.querySelector(".register-form");
       if (!form) return;
@@ -97,15 +99,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
+    // --- HOME ---
     if (view === "home") {
       console.log("🏠 Página principal cargada correctamente");
 
-      // Aquí puedes agregar botones, eventos, sliders, etc.
+      // Botón de cerrar sesión
       const logoutBtn = document.querySelector("#logout-btn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
           alert("Sesión cerrada 👋");
           window.location.hash = "login";
+        });
+      }
+
+      // Botón de "Comprar ahora" (opcional)
+      const cta = document.querySelector(".cta");
+      if (cta) {
+        cta.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("🛍️ Próximamente tienda en línea AMAVI 💎");
         });
       }
     }
@@ -146,4 +158,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
 
