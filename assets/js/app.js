@@ -120,6 +120,26 @@ document.addEventListener("DOMContentLoaded", () => {
           alert("🛍️ Próximamente tienda en línea AMAVI 💎");
         });
       }
+
+      // --- 🍔 MENÚ HAMBURGUESA ---
+      const burger = document.querySelector(".burger");
+      const nav = document.querySelector(".home-nav");
+
+      if (burger && nav) {
+        burger.addEventListener("click", () => {
+          nav.classList.toggle("active");
+          burger.classList.toggle("open");
+        });
+      }
+
+      // Cerrar menú al hacer clic en un enlace
+      const navLinks = document.querySelectorAll(".home-nav a");
+      navLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          nav.classList.remove("active");
+          burger.classList.remove("open");
+        });
+      });
     }
   }
 
@@ -158,5 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
 
 
