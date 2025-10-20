@@ -7,13 +7,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Función para cargar vistas dinámicamente ---
   async function loadView(view) {
     try {
-      // Ajustamos la ruta según el tipo de vista
       let path = "";
 
       if (view === "login" || view === "register") {
         path = `./views/${view}.html`;
       } else if (view === "home") {
-        // home está dentro de views/pagina_principal/
         path = `./views/pagina_principal/home.html`;
       } else {
         throw new Error("Vista desconocida: " + view);
@@ -25,11 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const html = await res.text();
       app.innerHTML = html;
 
-      // Inicializar eventos de la vista cargada
       initEvents(view);
-
-      // Aplicar estilos específicos si los hay
-      applyPixelPerfect(view);
     } catch (error) {
       console.error("❌ Error cargando la vista:", error);
       app.innerHTML = `<p class="center">⚠️ No se pudo cargar <strong>${view}</strong>.</p>`;
@@ -45,8 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("hashchange", router);
   window.addEventListener("load", router);
 
-  // --- Inicializar eventos de cada vista ---
+  // --- Inicializar eventos según la vista ---
   function initEvents(view) {
+
     // --- LOGIN ---
     if (view === "login") {
       const form = document.querySelector(".login-form");
@@ -63,12 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Inicio de sesión exitoso ✅ Bienvenido " + email);
-
-        // Redirigir a la página principal (home)
-        window.location.hash = "home";
+        window.location.hash = "home"; // redirige a home
       });
 
-      // Evento para ir a registro
+      // enlace para ir a registro
       const goRegister = document.querySelector("#go-register");
       if (goRegister) {
         goRegister.addEventListener("click", (e) => {
@@ -80,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- REGISTER ---
     if (view === "register") {
-      const form = document.querySelector(".register-form");
+      const form = document.querySelector("form");
       if (!form) return;
 
       form.addEventListener("submit", (e) => {
@@ -88,22 +81,37 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = form.querySelector("#name").value.trim();
         const email = form.querySelector("#email").value.trim();
         const pass = form.querySelector("#password").value.trim();
+        const confirm = form.querySelector("#password-confirm").value.trim();
 
-        if (!name || !email || !pass) {
+        if (!name || !email || !pass || !confirm) {
           alert("Completa todos los campos para registrarte ❌");
+          return;
+        }
+
+        if (pass !== confirm) {
+          alert("Las contraseñas no coinciden ⚠️");
           return;
         }
 
         alert("Registro exitoso 🎉 Ahora puedes iniciar sesión");
         window.location.hash = "login";
       });
+
+      // enlace para volver al login
+      const goLogin = document.querySelector("#go-login");
+      if (goLogin) {
+        goLogin.addEventListener("click", (e) => {
+          e.preventDefault();
+          window.location.hash = "login";
+        });
+      }
     }
 
     // --- HOME ---
     if (view === "home") {
       console.log("🏠 Página principal cargada correctamente");
 
-      // Botón de cerrar sesión
+      // Cerrar sesión
       const logoutBtn = document.querySelector("#logout-btn");
       if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
@@ -112,16 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // Botón de "Comprar ahora" (opcional)
-      const cta = document.querySelector(".cta");
-      if (cta) {
-        cta.addEventListener("click", (e) => {
-          e.preventDefault();
-          alert("🛍️ Próximamente tienda en línea AMAVI 💎");
-        });
-      }
-
-      // --- 🍔 MENÚ HAMBURGUESA ---
+      // Menú hamburguesa
       const burger = document.querySelector(".burger");
       const nav = document.querySelector(".home-nav");
 
@@ -130,54 +129,19 @@ document.addEventListener("DOMContentLoaded", () => {
           nav.classList.toggle("active");
           burger.classList.toggle("open");
         });
-      }
 
-      // Cerrar menú al hacer clic en un enlace
-      const navLinks = document.querySelectorAll(".home-nav a");
-      navLinks.forEach(link => {
-        link.addEventListener("click", () => {
-          nav.classList.remove("active");
-          burger.classList.remove("open");
+        const navLinks = nav.querySelectorAll("a");
+        navLinks.forEach(link => {
+          link.addEventListener("click", () => {
+            nav.classList.remove("active");
+            burger.classList.remove("open");
+          });
         });
-      });
-    }
-  }
-
-  // --- Ajustes visuales tipo Figma (opcionales) ---
-  function applyPixelPerfect(view) {
-    if (view === "login") {
-      const title = document.querySelector(".auth-title");
-      if (title) {
-        title.style.fontSize = "28px";
-        title.style.lineHeight = "34px";
-        title.style.fontWeight = "700";
-      }
-
-      const inputs = document.querySelectorAll(".input");
-      inputs.forEach((input) => {
-        input.style.height = "48px";
-        input.style.borderRadius = "10px";
-        input.style.fontSize = "15px";
-        input.style.padding = "12px 14px";
-      });
-
-      const btn = document.querySelector(".auth-btn");
-      if (btn) {
-        btn.style.height = "44px";
-        btn.style.borderRadius = "12px";
-        btn.style.fontSize = "15px";
-        btn.style.fontWeight = "600";
-      }
-
-      const sub = document.querySelector(".muted");
-      if (sub) {
-        sub.style.fontSize = "15px";
-        sub.style.lineHeight = "22px";
-        sub.style.color = "#7b7b7b";
       }
     }
   }
 });
+
 
 
 
