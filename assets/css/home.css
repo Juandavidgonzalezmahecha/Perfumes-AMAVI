@@ -1,0 +1,80 @@
+/* assets/css/home.css */
+body {
+  background: #0f0f0f;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 36px;
+  background: linear-gradient(90deg, rgba(16,16,16,1), rgba(22,22,22,1));
+  border-bottom: 1px solid rgba(217,157,62,0.06);
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brand img { width: 48px; height: auto; }
+.brand h1 { color: #d69d3e; font-size: 20px; margin: 0; }
+
+.home-nav a {
+  color: #d69d3e;
+  text-decoration: none;
+  margin-left: 12px;
+}
+
+.home-main { padding: 28px 36px; }
+
+.hero {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(31,31,31,0.6), rgba(20,20,20,0.6));
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.hero-content h2 { color: #d69d3e; font-size: 36px; margin-bottom: 8px; }
+.hero-content p { color: #ddd; margin-bottom: 12px; }
+.cta {
+  background: #d69d3e;
+  color: #000;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.productos h3 { color: #fff; margin-bottom: 16px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  background: #171717;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+.card img { width: 100%; height: auto; border-radius: 6px; }
+.card h4 { color: #d69d3e; margin: 8px 0 4px; }
+.card p { color: #fff; margin: 0; }
+
+.home-footer {
+  text-align: center;
+  padding: 18px;
+  color: #9b9b9b;
+}
