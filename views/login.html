@@ -1,36 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - AMAVI</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMAVI - Fragancias</title>
+    <link rel="stylesheet" href="../assets/css/home.css">
+    <script defer src="../assets/js/app.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="login-section">
-      <div class="login-box">
-        <h1>AMAVI</h1>
-        <p>Bienvenido</p>
-        <form class="login-form" action="#" method="POST">
-          <label for="email">Correo</label>
-          <input type="email" id="email" name="email" placeholder="Amavi@gmail.com" required>
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">AMAVI</div>
+        <nav class="nav-links">
+            <a href="#">Inicio</a>
+            <a href="#">Colección</a>
+            <a href="#">Productos</a>
+            <a href="#">Nosotros</a>
+            <a href="#">Contacto</a>
+        </nav>
 
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" name="password" placeholder="********" required>
+        <div class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
 
-          <a href="#">¿Olvidó su contraseña?</a>
-          <button type="submit" class="btn-login">INGRESAR</button>
-        </form>
-        <p>¿No tiene una cuenta? <a href="#register">Registrarse</a></p>
-      </div>
-    </div>
-    <div class="illustration-section">
-      <div class="illustration">
-        <img src="assets/img/LOGOAMAVI.png" alt="logo de amavi">
-      </div>
-    </div>
-  </div>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Eleva tu espíritu con fragancias<br>con aroma a victoria</h1>
+            <p>Perfumes exclusivos para quienes dejan huella.</p>
+            <button class="btn">Explorar</button>
+        </div>
+        <div class="hero-img">
+            <img src="../assets/img/perfume1.png" alt="Perfume AMAVI">
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE VALORES -->
+    <section class="valores">
+        <h2>Nuestros valores</h2>
+        <p>En AMAVI creemos en la elegancia, la autenticidad y el poder de una fragancia para transformar momentos.</p>
+    </section>
+
+    <!-- PRODUCTOS MÁS VENDIDOS -->
+    <section class="productos">
+        <h2>Productos más vendidos</h2>
+        <div class="productos-grid">
+            <div class="producto">
+                <img src="../assets/img/prod1.png" alt="Perfume 1">
+                <p>Luxurious Elixir</p>
+                <span>$220.00</span>
+            </div>
+            <div class="producto">
+                <img src="../assets/img/prod2.png" alt="Perfume 2">
+                <p>The Golden Legacy</p>
+                <span>$160.00</span>
+            </div>
+            <div class="producto">
+                <img src="../assets/img/prod3.png" alt="Perfume 3">
+                <p>Luxurious Essence</p>
+                <span>$250.00</span>
+            </div>
+            <div class="producto">
+                <img src="../assets/img/prod4.png" alt="Perfume 4">
+                <p>Luxurious Rough</p>
+                <span>$260.00</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVA COLECCIÓN -->
+    <section class="coleccion">
+        <h2>Nueva Colección</h2>
+        <div class="coleccion-grid">
+            <img src="../assets/img/coleccion1.png" alt="Colección 1">
+            <img src="../assets/img/coleccion2.png" alt="Colección 2">
+            <img src="../assets/img/coleccion3.png" alt="Colección 3">
+        </div>
+    </section>
+
+    <!-- ÚLTIMOS ARTÍCULOS -->
+    <section class="articulos">
+        <h2>Últimos artículos</h2>
+        <div class="articulos-grid">
+            <article>
+                <img src="../assets/img/art1.png" alt="Artículo 1">
+                <h3>Cómo elegir tu fragancia ideal</h3>
+                <p>Descubre el arte de elegir el perfume que mejor se adapte a tu personalidad.</p>
+            </article>
+            <article>
+                <img src="../assets/img/art2.png" alt="Artículo 2">
+                <h3>El poder de un aroma</h3>
+                <p>Cómo las fragancias pueden influir en tus emociones y recuerdos.</p>
+            </article>
+            <article>
+                <img src="../assets/img/art3.png" alt="Artículo 3">
+                <h3>Fragancias para cada ocasión</h3>
+                <p>Consejos sobre cuándo y cómo usar tus perfumes favoritos.</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 AMAVI. Todos los derechos reservados.</p>
+            <div class="social-icons">
+                <a href="#"><img src="../assets/img/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="../assets/img/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="../assets/img/twitter.png" alt="Twitter"></a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
+
 
