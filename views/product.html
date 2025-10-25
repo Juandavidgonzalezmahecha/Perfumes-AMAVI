@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detalle de Perfume - AMAVI</title>
+  <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <h1><a href="../index.html">AMAVI</a></h1>
+      <nav>
+        <a href="../index.html">Inicio</a>
+        <a href="products.html">Catálogo</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:60px 0;">
+    <div id="productDetail"></div>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get("id"));
+    const product = perfumes.find(p => p.id === id);
+    const detail = document.getElementById("productDetail");
+
+    if (product) {
+      detail.innerHTML = `
+        <div class="card center" style="max-width:480px;margin:auto;">
+          <img src="../assets/img/${product.image}" alt="${product.name}" />
+          <h2>${product.name}</h2>
+          <p class="text-muted">${product.notes}</p>
+          <p>Precio: <strong>$${product.price.toLocaleString()}</strong></p>
+          <button class="btn-primary" onclick="alert('Añadido al carrito!')">Agregar al carrito</button>
+        </div>
+      `;
+    } else {
+      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado</p>";
+    }
+  </script>
+</body>
+</html>
