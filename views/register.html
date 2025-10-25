@@ -19,7 +19,11 @@
           <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
           <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
           <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">🛒 <span id="cartCount" class="cart-count">0</span></a></li>
+          <li>
+            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
+              🛒 <span id="cartCount" class="cart-count">0</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -27,20 +31,23 @@
 
   <!-- 🔸 FORMULARIO DE REGISTRO -->
   <main class="center" style="padding:80px 0">
-    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
+    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.05),transparent);padding:32px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
       <h2 class="center">Crear cuenta</h2>
       <form id="registerForm">
-        <label class="text-muted">Nombre</label>
-        <input name="name" required />
-        <label class="text-muted">Email</label>
-        <input type="email" name="email" required />
+        <label class="text-muted">Nombre completo</label>
+        <input name="name" placeholder="Tu nombre" required />
+
+        <label class="text-muted">Correo electrónico</label>
+        <input type="email" name="email" placeholder="ejemplo@correo.com" required />
+
         <label class="text-muted">Contraseña</label>
-        <input type="password" name="password" required />
-        <div style="margin-top:12px">
+        <input type="password" name="password" placeholder="********" required />
+
+        <div style="margin-top:16px">
           <button class="btn-primary" type="submit">Crear cuenta</button>
         </div>
       </form>
-      <p class="center text-muted" style="margin-top:10px;">
+      <p class="center text-muted" style="margin-top:16px;">
         ¿Ya tienes cuenta? <a href="/Perfumes-AMAVI/views/login.html">Inicia sesión aquí</a>
       </p>
     </div>
@@ -60,13 +67,25 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPT -->
+  <!-- 🔸 SCRIPTS -->
+  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
+    // Simulación de registro
     document.getElementById('registerForm').addEventListener('submit', e => {
       e.preventDefault();
-      alert('Función de registro próximamente disponible');
+      alert('📝 Función de registro próximamente disponible');
+    });
+
+    // 🔹 Actualizar contador del carrito
+    document.addEventListener("DOMContentLoaded", () => {
+      const countEl = document.getElementById("cartCount");
+      if (!countEl) return;
+      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      countEl.textContent = totalItems;
     });
   </script>
 </body>
 </html>
+
 
