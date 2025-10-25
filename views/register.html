@@ -1,12 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Registrarse - AMAVI</title>
-  <link href="../assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+
+  <!-- 🔸 CABECERA -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
+          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
+          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
+          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🔸 FORMULARIO DE REGISTRO -->
   <main class="center" style="padding:80px 0">
     <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Crear cuenta</h2>
@@ -18,16 +36,36 @@
         <label class="text-muted">Contraseña</label>
         <input type="password" name="password" required />
         <div style="margin-top:12px">
-          <button class="btn-primary" type="submit">Crear</button>
+          <button class="btn-primary" type="submit">Crear cuenta</button>
         </div>
       </form>
+      <p class="center text-muted" style="margin-top:10px;">
+        ¿Ya tienes cuenta? <a href="/Perfumes-AMAVI/views/login.html">Inicia sesión aquí</a>
+      </p>
     </div>
   </main>
+
+  <!-- 🔸 PIE DE PÁGINA -->
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Perfumes personalizados para cada esencia.</p>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <p>hola@amavi.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 🔸 SCRIPT -->
   <script>
     document.getElementById('registerForm').addEventListener('submit', e => {
       e.preventDefault();
-      alert('Registro a implementar');
+      alert('Función de registro próximamente disponible');
     });
   </script>
 </body>
 </html>
+
