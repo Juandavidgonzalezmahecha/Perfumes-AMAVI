@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personaliza tu Perfume - AMAVI</title>
+  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
+  <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- 🔸 NAVBAR -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html" class="active">Personalizar</a></li>
+          <li><a href="login.html">Ingresar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🔸 SECCIÓN DE PERSONALIZACIÓN -->
+  <main class="wrap" style="padding:60px 0;">
+    <h2 class="center">Crea tu perfume ideal</h2>
+    <p class="center text-muted">Responde algunas preguntas y descubre la fragancia perfecta para ti.</p>
+
+    <form id="quizForm" class="form-card" style="max-width:600px;margin:40px auto;">
+      <label>1️⃣ ¿Prefieres aromas dulces o frescos?</label>
+      <select name="aroma">
+        <option value="dulce">Dulces</option>
+        <option value="fresco">Frescos</option>
+        <option value="amaderado">Amaderados</option>
+      </select>
+
+      <label>2️⃣ ¿Para qué ocasión usarías el perfume?</label>
+      <select name="ocasion">
+        <option value="diario">Uso diario</option>
+        <option value="elegante">Eventos elegantes</option>
+        <option value="noche">Salidas nocturnas</option>
+      </select>
+
+      <label>3️⃣ ¿Qué tipo de duración prefieres?</label>
+      <select name="duracion">
+        <option value="suave">Suave (4h)</option>
+        <option value="media">Media (6h)</option>
+        <option value="intensa">Intensa (8h+)</option>
+      </select>
+
+      <div style="margin-top:20px;" class="center">
+        <button type="submit" class="btn-primary">Generar mi perfume</button>
+      </div>
+    </form>
+
+    <div id="resultado" class="center" style="margin-top:40px;"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Perfumes personalizados para cada esencia.</p>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <p>hola@amavi.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.getElementById("quizForm");
+    const result = document.getElementById("resultado");
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const aroma = form.aroma.value;
+      const ocasion = form.ocasion.value;
+      const duracion = form.duracion.value;
+
+      let recomendacion = "";
+
+      if (aroma === "dulce" && ocasion === "noche") {
+        recomendacion = "AMAVI Noire — notas de vainilla, ámbar y jazmín.";
+      } else if (aroma === "fresco" && ocasion === "diario") {
+        recomendacion = "AMAVI Breeze — notas cítricas y florales para un día activo.";
+      } else if (aroma === "amaderado" && ocasion === "elegante") {
+        recomendacion = "AMAVI Royal — fragancia sofisticada con toques de sándalo y cedro.";
+      } else {
+        recomendacion = "AMAVI Essence — una mezcla equilibrada adaptada a tu estilo.";
+      }
+
+      result.innerHTML = `
+        <div class="card" style="max-width:500px;margin:auto;">
+          <h3>Tu recomendación personalizada</h3>
+          <p>${recomendacion}</p>
+          <a class="btn-secondary" href="products.html">Ver perfumes similares</a>
+        </div>
+      `;
+      form.reset();
+    });
+  </script>
+</body>
+</html>
