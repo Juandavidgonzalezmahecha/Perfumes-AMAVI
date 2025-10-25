@@ -4,54 +4,54 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Personaliza tu Perfume - AMAVI</title>
-  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
-  <link href="../assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- 🔸 NAVBAR -->
+  <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../index.html">AMAVI</a>
+      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
       <nav class="main-nav">
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="products.html">Catálogo</a></li>
-          <li><a href="personalizar.html" class="active">Personalizar</a></li>
-          <li><a href="login.html">Ingresar</a></li>
+          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
+          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
+          <li><a href="/Perfumes-AMAVI/views/personalizar.html" class="active">Personalizar</a></li>
+          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <!-- 🔸 SECCIÓN DE PERSONALIZACIÓN -->
-  <main class="wrap" style="padding:60px 0;">
+  <main class="wrap" style="padding:80px 0;">
     <h2 class="center">Crea tu perfume ideal</h2>
     <p class="center text-muted">Responde algunas preguntas y descubre la fragancia perfecta para ti.</p>
 
     <form id="quizForm" class="form-card" style="max-width:600px;margin:40px auto;">
       <label>1️⃣ ¿Prefieres aromas dulces o frescos?</label>
-      <select name="aroma">
+      <select name="aroma" required>
         <option value="dulce">Dulces</option>
         <option value="fresco">Frescos</option>
         <option value="amaderado">Amaderados</option>
       </select>
 
       <label>2️⃣ ¿Para qué ocasión usarías el perfume?</label>
-      <select name="ocasion">
+      <select name="ocasion" required>
         <option value="diario">Uso diario</option>
         <option value="elegante">Eventos elegantes</option>
         <option value="noche">Salidas nocturnas</option>
       </select>
 
       <label>3️⃣ ¿Qué tipo de duración prefieres?</label>
-      <select name="duracion">
+      <select name="duracion" required>
         <option value="suave">Suave (4h)</option>
         <option value="media">Media (6h)</option>
         <option value="intensa">Intensa (8h+)</option>
       </select>
 
-      <div style="margin-top:20px;" class="center">
+      <div class="center" style="margin-top:24px;">
         <button type="submit" class="btn-primary">Generar mi perfume</button>
       </div>
     </form>
@@ -59,6 +59,7 @@
     <div id="resultado" class="center" style="margin-top:40px;"></div>
   </main>
 
+  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -72,6 +73,7 @@
     </div>
   </footer>
 
+  <!-- 🔸 SCRIPT -->
   <script>
     const form = document.getElementById("quizForm");
     const result = document.getElementById("resultado");
@@ -85,20 +87,20 @@
       let recomendacion = "";
 
       if (aroma === "dulce" && ocasion === "noche") {
-        recomendacion = "AMAVI Noire — notas de vainilla, ámbar y jazmín.";
+        recomendacion = "🌙 <strong>AMAVI Noire</strong> — notas de vainilla, ámbar y jazmín.";
       } else if (aroma === "fresco" && ocasion === "diario") {
-        recomendacion = "AMAVI Breeze — notas cítricas y florales para un día activo.";
+        recomendacion = "🌼 <strong>AMAVI Breeze</strong> — notas cítricas y florales para un día activo.";
       } else if (aroma === "amaderado" && ocasion === "elegante") {
-        recomendacion = "AMAVI Royal — fragancia sofisticada con toques de sándalo y cedro.";
+        recomendacion = "👑 <strong>AMAVI Royal</strong> — fragancia sofisticada con toques de sándalo y cedro.";
       } else {
-        recomendacion = "AMAVI Essence — una mezcla equilibrada adaptada a tu estilo.";
+        recomendacion = "💫 <strong>AMAVI Essence</strong> — una mezcla equilibrada adaptada a tu estilo.";
       }
 
       result.innerHTML = `
-        <div class="card" style="max-width:500px;margin:auto;">
+        <div class="card" style="max-width:520px;margin:auto;">
           <h3>Tu recomendación personalizada</h3>
           <p>${recomendacion}</p>
-          <a class="btn-secondary" href="products.html">Ver perfumes similares</a>
+          <a class="btn-secondary" href="/Perfumes-AMAVI/views/products.html">Ver perfumes similares</a>
         </div>
       `;
       form.reset();
@@ -106,3 +108,4 @@
   </script>
 </body>
 </html>
+
