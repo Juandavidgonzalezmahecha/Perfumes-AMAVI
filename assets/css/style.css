@@ -1,4 +1,4 @@
-/* 🎨 PALETA DE COLORES Y VARIABLES */
+/* 🎨 PALETA DE COLORES */
 :root {
   --bg: #0A0A0A;
   --bg-2: #1A1A1A;
@@ -10,7 +10,7 @@
   --max-width: 1200px;
 }
 
-/* 🌐 RESET */
+/* 🔧 RESET Y BASE */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; scroll-behavior: smooth; }
 body {
@@ -18,17 +18,16 @@ body {
   color: var(--text);
   font-family: 'Poppins', sans-serif;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* 📏 ESTRUCTURA GENERAL */
+/* 🧱 ESTRUCTURA */
 .wrap { width: 90%; max-width: var(--max-width); margin: 0 auto; }
 .center { text-align: center; }
 .text-muted { color: var(--muted); }
 
-/* 🔸 HEADER / NAVBAR */
+/* 🔸 HEADER */
 .site-header {
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(10,10,10,0.85);
   backdrop-filter: blur(8px);
   padding: 18px 0;
   position: sticky;
@@ -46,7 +45,6 @@ body {
   color: var(--accent);
   font-size: 26px;
   text-decoration: none;
-  letter-spacing: 1px;
 }
 .main-nav ul {
   list-style: none;
@@ -62,15 +60,34 @@ body {
 .main-nav a.active {
   color: var(--accent-2);
 }
-.nav-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: var(--text);
+
+/* 🛒 ICONO CARRITO */
+.cart-link {
+  position: relative;
   font-size: 20px;
+  text-decoration: none;
+  color: var(--accent);
+}
+.cart-link:hover {
+  color: var(--accent-2);
+}
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 🔸 BOTONES */
+/* 🔘 BOTONES */
 .btn-primary {
   background: var(--accent);
   color: #081010;
@@ -81,13 +98,11 @@ body {
   display: inline-block;
   transition: all 0.2s ease;
 }
-.btn-primary:hover {
-  background: var(--accent-2);
-  transform: scale(1.03);
-}
+.btn-primary:hover { background: var(--accent-2); transform: scale(1.03); }
+
 .btn-ghost {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.1);
   padding: 10px 16px;
   border-radius: 8px;
   color: var(--muted);
@@ -98,6 +113,7 @@ body {
   color: var(--accent);
   border-color: var(--accent);
 }
+
 .btn-secondary {
   background: var(--bg-2);
   border: 1px solid var(--accent);
@@ -114,9 +130,7 @@ body {
 }
 
 /* 🏠 HERO */
-.hero {
-  padding: 80px 0;
-}
+.hero { padding: 80px 0; }
 .hero-inner {
   display: grid;
   grid-template-columns: 1fr 420px;
@@ -136,11 +150,10 @@ body {
 .hero-image img {
   width: 100%;
   max-width: 380px;
-  display: block;
   border-radius: 8px;
 }
 
-/* 🧴 PRODUCTOS */
+/* 💎 PRODUCTOS */
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -154,26 +167,14 @@ body {
   text-align: center;
   transition: transform 0.2s ease;
 }
-.product-card:hover, .card:hover {
-  transform: translateY(-4px);
-}
+.product-card:hover, .card:hover { transform: translateY(-4px); }
 .card img, .product-card img {
   width: 100%;
   border-radius: 8px;
 }
-.card h4, .product-card h3 {
-  margin: 12px 0 6px;
-  font-weight: 600;
-}
-.card p, .product-card p {
-  color: var(--muted);
-  font-size: 14px;
-}
-.price {
-  color: var(--accent);
-  font-weight: 700;
-  margin-top: 8px;
-}
+.card h4, .product-card h3 { margin: 12px 0 6px; font-weight: 600; }
+.card p, .product-card p { color: var(--muted); font-size: 14px; }
+.price { color: var(--accent); font-weight: 700; margin-top: 8px; }
 
 /* 🧾 FORMULARIOS */
 form {
@@ -189,11 +190,9 @@ input, select {
   color: var(--text);
   font-size: 14px;
 }
-input:focus, select:focus {
-  outline: 1px solid var(--accent);
-}
+input:focus, select:focus { outline: 1px solid var(--accent); }
 
-/* 🪶 DETALLE DE PRODUCTO */
+/* 🪶 DETALLE PRODUCTO */
 .product-detail-card {
   display: flex;
   flex-wrap: wrap;
@@ -204,33 +203,13 @@ input:focus, select:focus {
   padding: 40px;
   border-radius: 12px;
 }
-.product-detail-card img {
-  width: 280px;
-  border-radius: 8px;
-}
-.product-detail-card .detail-info {
-  max-width: 400px;
-}
+.product-detail-card img { width: 280px; border-radius: 8px; }
 .product-detail-card h2 {
   font-family: 'Playfair Display', serif;
   font-size: 32px;
   margin-bottom: 12px;
 }
-.product-detail-card p {
-  margin-bottom: 10px;
-}
-
-/* 🧠 SECCIÓN PERSONALIZAR */
-.form-card {
-  background: var(--bg-2);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-.form-card label {
-  margin-top: 10px;
-  font-weight: 500;
-}
+.product-detail-card p { margin-bottom: 10px; }
 
 /* ⚙️ FOOTER */
 .site-footer {
@@ -243,14 +222,6 @@ input:focus, select:focus {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
 }
-.site-footer a {
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.site-footer a:hover {
-  color: var(--accent);
-}
 
 /* 📱 RESPONSIVE */
 @media (max-width: 1024px) {
@@ -261,35 +232,7 @@ input:focus, select:focus {
 }
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: 1fr; }
-  .product-detail-card { flex-direction: column; }
   .hero h1 { font-size: 34px; }
-}
-/* 🛒 CARRITO EN NAVBAR */
-.cart-link {
-  position: relative;
-  font-size: 20px;
-  text-decoration: none;
-  color: var(--accent);
-}
-
-.cart-link:hover {
-  color: var(--accent-2);
-}
-
-.cart-count {
-  position: absolute;
-  top: -8px;
-  right: -12px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 12px;
-  font-weight: 700;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 
