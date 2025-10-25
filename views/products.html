@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catálogo de Perfumes - AMAVI</title>
+  <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="nav">
+    <div class="container">
+      <h1><a href="../index.html">AMAVI</a></h1>
+      <nav>
+        <a href="../index.html">Inicio</a>
+        <a href="products.html" class="active">Catálogo</a>
+        <a href="login.html">Ingresar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" style="padding:60px 0;">
+    <h2 class="center">Catálogo de Perfumes</h2>
+    <p class="center text-muted">Explora nuestras fragancias exclusivas para cada estilo</p>
+
+    <div id="productGrid" class="grid-3" style="margin-top:40px;"></div>
+  </main>
+
+  <script src="../assets/js/app.js"></script>
+  <script>
+    // Mostrar productos simulados desde app.js
+    const grid = document.getElementById("productGrid");
+    if (typeof perfumes !== "undefined") {
+      grid.innerHTML = perfumes.map(p => `
+        <div class="card">
+          <img src="../assets/img/${p.image}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <p class="text-muted">${p.notes}</p>
+          <button class="btn-primary" onclick="location.href='product.html?id=${p.id}'">Ver más</button>
+        </div>
+      `).join("");
+    } else {
+      grid.innerHTML = "<p class='center text-muted'>No hay productos disponibles.</p>";
+    }
+  </script>
+</body>
+</html>
