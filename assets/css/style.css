@@ -264,6 +264,34 @@ input:focus, select:focus {
   .product-detail-card { flex-direction: column; }
   .hero h1 { font-size: 34px; }
 }
+/* 🛒 CARRITO EN NAVBAR */
+.cart-link {
+  position: relative;
+  font-size: 20px;
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.cart-link:hover {
+  color: var(--accent-2);
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 
 
