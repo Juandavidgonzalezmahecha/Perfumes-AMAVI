@@ -1,29 +1,11 @@
 // 🟣 Datos base de productos
 const perfumes = [
-  {
-    id: 1,
-    name: "AMAVI Bleu",
-    price: 79,
-    notes: "Aromas cítricos y madera.",
-    image: "p1.png"
-  },
-  {
-    id: 2,
-    name: "AMAVI Noir",
-    price: 89,
-    notes: "Notas intensas y ambaradas.",
-    image: "p2.png"
-  },
-  {
-    id: 3,
-    name: "AMAVI Pure",
-    price: 69,
-    notes: "Fresco, floral y limpio.",
-    image: "p3.png"
-  }
+  { id: 1, name: "AMAVI Bleu", price: 79, notes: "Aromas cítricos y madera.", image: "p1.png" },
+  { id: 2, name: "AMAVI Noir", price: 89, notes: "Notas intensas y ambaradas.", image: "p2.png" },
+  { id: 3, name: "AMAVI Pure", price: 69, notes: "Fresco, floral y limpio.", image: "p3.png" }
 ];
 
-// 🟢 Renderizar productos en la cuadrícula principal
+// 🧩 Renderizar productos dinámicamente
 function renderProducts() {
   const grid = document.getElementById("productsGrid") || document.getElementById("productGrid");
   if (!grid) return;
@@ -39,7 +21,7 @@ function renderProducts() {
   `).join("");
 }
 
-// 🛒 Funciones del carrito
+// 🛒 FUNCIONES DEL CARRITO
 function getCart() {
   return JSON.parse(localStorage.getItem("amavi_cart") || "[]");
 }
@@ -61,12 +43,10 @@ function addToCart(id) {
   }
 
   saveCart(cart);
+  updateCartCount();
   alert(`🛍️ ${perfume.name} fue agregado al carrito`);
 }
 
-// 🧩 Render automático si hay grilla en la página
-document.addEventListener("DOMContentLoaded", renderProducts);
-// 🟡 ACTUALIZAR CONTADOR DEL CARRITO EN NAVBAR
 function updateCartCount() {
   const countSpan = document.getElementById("cartCount");
   if (!countSpan) return;
@@ -75,29 +55,11 @@ function updateCartCount() {
   countSpan.textContent = totalItems;
 }
 
-// Refrescar el contador cada vez que se agrega un producto
+// 🟡 EVENTOS AUTOMÁTICOS
 document.addEventListener("DOMContentLoaded", () => {
   renderProducts();
   updateCartCount();
 });
-
-// Reemplaza tu función addToCart con esta versión:
-function addToCart(id) {
-  const perfume = perfumes.find(p => p.id === id);
-  if (!perfume) return;
-
-  const cart = getCart();
-  const found = cart.find(i => i.id === id);
-  if (found) {
-    found.qty += 1;
-  } else {
-    cart.push({ id: perfume.id, name: perfume.name, price: perfume.price, qty: 1 });
-  }
-
-  saveCart(cart);
-  alert(`🛍️ ${perfume.name} fue agregado al carrito`);
-  updateCartCount(); // 🔁 Actualiza el número en el icono
-}
 
 
 
