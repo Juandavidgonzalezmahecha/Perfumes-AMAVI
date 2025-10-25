@@ -9,26 +9,31 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+
+  <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="#">AMAVI</a>
+      <a class="brand" href="index.html">AMAVI</a>
       <nav class="main-nav">
         <ul>
-          <li><a href="#">Inicio</a></li>
-          <li><a class="btn-primary" href="views/products.html">Ver catálogo</a></li>
-          <li><a href="#">Personalizar</a></li>
+          <li><a href="index.html" class="active">Inicio</a></li>
+          <li><a href="views/products.html">Catálogo</a></li>
+          <li><a href="views/personalizar.html">Personalizar</a></li>
+          <li><a href="views/login.html">Ingresar</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
+  <!-- 🔸 HERO -->
   <main>
     <section class="hero">
       <div class="wrap hero-inner">
         <div class="hero-copy">
           <h1>Eleva tu esencia con fragancias que cuentan historias</h1>
           <p class="lead">Perfumes artesanales, mezcla personalizada y entrega rápida. Descubre tu aroma único.</p>
-          <a class="btn-primary" href="views/login.html">Ingresar</a>
+          <a class="btn-primary" href="views/products.html">Ver Catálogo</a>
+          <a class="btn-ghost" href="views/personalizar.html">Personalizar Perfume</a>
         </div>
         <div class="hero-image">
           <img src="assets/img/hero-bottle.png" alt="Frasco AMAVI" />
@@ -36,12 +41,14 @@
       </div>
     </section>
 
+    <!-- 🔸 CATÁLOGO DESTACADO -->
     <section class="catalog wrap">
       <h2>Productos destacados</h2>
       <div id="productsGrid" class="products-grid"></div>
     </section>
   </main>
 
+  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -53,10 +60,28 @@
         <p>hola@amavi.com</p>
       </div>
     </div>
+    <p class="center text-muted" style="margin-top:20px;">&copy; 2025 Perfumes AMAVI — Todos los derechos reservados</p>
   </footer>
 
   <script src="assets/js/app.js"></script>
+  <script>
+    // Mostrar perfumes destacados (3 primeros del arreglo)
+    const grid = document.getElementById("productsGrid");
+    if (typeof perfumes !== "undefined") {
+      grid.innerHTML = perfumes.slice(0, 3).map(p => `
+        <div class="product-card">
+          <img src="assets/img/${p.image}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <p class="text-muted">${p.notes}</p>
+          <a class="btn-secondary" href="views/product.html?id=${p.id}">Ver más</a>
+        </div>
+      `).join("");
+    } else {
+      grid.innerHTML = "<p class='center text-muted'>No hay productos disponibles.</p>";
+    }
+  </script>
 </body>
 </html>
+
 
 
