@@ -3,17 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redirigiendo a Login - Perfumes AMAVI</title>
-  <link rel="icon" type="image/png" href="assets/img/LOGOAMAVI.png" />
-  <meta http-equiv="refresh" content="0; url=views/login.html" />
+  <title>Perfumes AMAVI</title>
+  <link rel="icon" href="assets/img/LOGOAMAVI.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div style="text-align:center; padding:50px;">
-    <h1>Redirigiendo a la página de inicio de sesión...</h1>
-    <p>Si no eres redirigido automáticamente, haz clic 
-      <a href="views/login.html">aquí</a>.
-    </p>
-  </div>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="#">AMAVI</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#">Catálogo</a></li>
+          <li><a href="#">Personalizar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-inner">
+        <div class="hero-copy">
+          <h1>Eleva tu esencia con fragancias que cuentan historias</h1>
+          <p class="lead">Perfumes artesanales, mezcla personalizada y entrega rápida. Descubre tu aroma único.</p>
+          <a class="btn-primary" href="#">Crea tu perfume</a>
+        </div>
+        <div class="hero-image">
+          <img src="assets/img/hero-bottle.png" alt="Frasco AMAVI" />
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog wrap">
+      <h2>Productos destacados</h2>
+      <div id="productsGrid" class="products-grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Perfumes artesanales y personalizados.</p>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <p>hola@amavi.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
+
 
