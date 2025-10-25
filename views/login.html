@@ -1,32 +1,72 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ingresar - AMAVI</title>
-  <link href="../assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-  <main class="center" style="padding:80px 0">
-    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
-      <h2 class="center">Ingresar</h2>
+
+  <!-- 🔸 CABECERA -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
+          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
+          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
+          <li><a href="/Perfumes-AMAVI/views/login.html" class="active">Ingresar</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🔸 FORMULARIO DE LOGIN -->
+  <main class="center" style="padding:80px 0;">
+    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.05),transparent);padding:32px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+      <h2 class="center">Iniciar sesión</h2>
       <form id="loginForm">
-        <label class="text-muted">Email</label>
-        <input type="email" name="email" required />
+        <label class="text-muted">Correo electrónico</label>
+        <input type="email" name="email" placeholder="ejemplo@correo.com" required />
+
         <label class="text-muted">Contraseña</label>
-        <input type="password" name="password" required />
-        <div style="margin-top:12px;display:flex;gap:10px;justify-content:space-between;align-items:center">
+        <input type="password" name="password" placeholder="********" required />
+
+        <div style="margin-top:16px;display:flex;gap:10px;justify-content:space-between;align-items:center">
           <button class="btn-primary" type="submit">Entrar</button>
-          <a href="register.html" class="btn-ghost">Registrarse</a>
+          <a href="/Perfumes-AMAVI/views/register.html" class="btn-ghost">Registrarse</a>
         </div>
       </form>
+      <p class="center text-muted" style="margin-top:16px;">
+        ¿Olvidaste tu contraseña? <a href="#">Recupérala aquí</a>
+      </p>
     </div>
   </main>
+
+  <!-- 🔸 PIE DE PÁGINA -->
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Perfumes personalizados para cada esencia.</p>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <p>hola@amavi.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 🔸 SCRIPT -->
   <script>
     document.getElementById('loginForm').addEventListener('submit', e => {
       e.preventDefault();
-      alert('Función de login a implementar');
+      alert('Función de inicio de sesión próximamente disponible');
     });
   </script>
 </body>
 </html>
+
