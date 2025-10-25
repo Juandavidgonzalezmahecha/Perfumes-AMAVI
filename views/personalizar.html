@@ -19,40 +19,44 @@
           <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
           <li><a href="/Perfumes-AMAVI/views/personalizar.html" class="active">Personalizar</a></li>
           <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">🛒 <span id="cartCount" class="cart-count">0</span></a></li>
+          <li>
+            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
+              🛒 <span id="cartCount" class="cart-count">0</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
 
   <!-- 🔸 SECCIÓN DE PERSONALIZACIÓN -->
-  <main class="wrap" style="padding:80px 0;">
+  <main class="wrap" style="padding:60px 0;">
     <h2 class="center">Crea tu perfume ideal</h2>
     <p class="center text-muted">Responde algunas preguntas y descubre la fragancia perfecta para ti.</p>
 
     <form id="quizForm" class="form-card" style="max-width:600px;margin:40px auto;">
       <label>1️⃣ ¿Prefieres aromas dulces o frescos?</label>
-      <select name="aroma" required>
+      <select name="aroma">
         <option value="dulce">Dulces</option>
         <option value="fresco">Frescos</option>
         <option value="amaderado">Amaderados</option>
       </select>
 
       <label>2️⃣ ¿Para qué ocasión usarías el perfume?</label>
-      <select name="ocasion" required>
+      <select name="ocasion">
         <option value="diario">Uso diario</option>
         <option value="elegante">Eventos elegantes</option>
         <option value="noche">Salidas nocturnas</option>
       </select>
 
       <label>3️⃣ ¿Qué tipo de duración prefieres?</label>
-      <select name="duracion" required>
+      <select name="duracion">
         <option value="suave">Suave (4h)</option>
         <option value="media">Media (6h)</option>
         <option value="intensa">Intensa (8h+)</option>
       </select>
 
-      <div class="center" style="margin-top:24px;">
+      <div style="margin-top:20px;" class="center">
         <button type="submit" class="btn-primary">Generar mi perfume</button>
       </div>
     </form>
@@ -75,6 +79,7 @@
   </footer>
 
   <!-- 🔸 SCRIPT -->
+  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
     const form = document.getElementById("quizForm");
     const result = document.getElementById("resultado");
@@ -88,17 +93,17 @@
       let recomendacion = "";
 
       if (aroma === "dulce" && ocasion === "noche") {
-        recomendacion = "🌙 <strong>AMAVI Noire</strong> — notas de vainilla, ámbar y jazmín.";
+        recomendacion = "AMAVI Noire — notas de vainilla, ámbar y jazmín.";
       } else if (aroma === "fresco" && ocasion === "diario") {
-        recomendacion = "🌼 <strong>AMAVI Breeze</strong> — notas cítricas y florales para un día activo.";
+        recomendacion = "AMAVI Breeze — notas cítricas y florales para un día activo.";
       } else if (aroma === "amaderado" && ocasion === "elegante") {
-        recomendacion = "👑 <strong>AMAVI Royal</strong> — fragancia sofisticada con toques de sándalo y cedro.";
+        recomendacion = "AMAVI Royal — fragancia sofisticada con toques de sándalo y cedro.";
       } else {
-        recomendacion = "💫 <strong>AMAVI Essence</strong> — una mezcla equilibrada adaptada a tu estilo.";
+        recomendacion = "AMAVI Essence — una mezcla equilibrada adaptada a tu estilo.";
       }
 
       result.innerHTML = `
-        <div class="card" style="max-width:520px;margin:auto;">
+        <div class="card" style="max-width:500px;margin:auto;">
           <h3>Tu recomendación personalizada</h3>
           <p>${recomendacion}</p>
           <a class="btn-secondary" href="/Perfumes-AMAVI/views/products.html">Ver perfumes similares</a>
@@ -106,7 +111,17 @@
       `;
       form.reset();
     });
+
+    // 🔹 Actualizar contador del carrito
+    document.addEventListener("DOMContentLoaded", () => {
+      const countEl = document.getElementById("cartCount");
+      if (!countEl) return;
+      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      countEl.textContent = totalItems;
+    });
   </script>
 </body>
 </html>
+
 
