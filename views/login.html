@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ingresar - AMAVI</title>
+  <link href="../assets/css/style.css" rel="stylesheet" />
+</head>
+<body>
+  <main class="center" style="padding:80px 0">
+    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
+      <h2 class="center">Ingresar</h2>
+      <form id="loginForm">
+        <label class="text-muted">Email</label>
+        <input type="email" name="email" required />
+        <label class="text-muted">Contraseña</label>
+        <input type="password" name="password" required />
+        <div style="margin-top:12px;display:flex;gap:10px;justify-content:space-between;align-items:center">
+          <button class="btn-primary" type="submit">Entrar</button>
+          <a href="register.html" class="btn-ghost">Registrarse</a>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      alert('Función de login a implementar');
+    });
+  </script>
+</body>
+</html>
