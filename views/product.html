@@ -1,27 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detalle de Perfume - AMAVI</title>
-  <link href="../assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-  <header class="nav">
-    <div class="container">
-      <h1><a href="../index.html">AMAVI</a></h1>
-      <nav>
-        <a href="../index.html">Inicio</a>
-        <a href="products.html">Catálogo</a>
+
+  <!-- 🔸 CABECERA -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
+          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
+          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
+          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
+        </ul>
       </nav>
     </div>
   </header>
 
-  <main class="container" style="padding:60px 0;">
-    <div id="productDetail"></div>
+  <!-- 🔸 CONTENIDO PRINCIPAL -->
+  <main class="wrap" style="padding:80px 0;">
+    <div id="productDetail" class="center"></div>
   </main>
 
-  <script src="../assets/js/app.js"></script>
+  <!-- 🔸 PIE DE PÁGINA -->
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Perfumes personalizados para cada esencia.</p>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <p>hola@amavi.com</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 🔸 SCRIPT -->
+  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get("id"));
@@ -30,17 +53,24 @@
 
     if (product) {
       detail.innerHTML = `
-        <div class="card center" style="max-width:480px;margin:auto;">
-          <img src="../assets/img/${product.image}" alt="${product.name}" />
-          <h2>${product.name}</h2>
-          <p class="text-muted">${product.notes}</p>
-          <p>Precio: <strong>$${product.price.toLocaleString()}</strong></p>
-          <button class="btn-primary" onclick="alert('Añadido al carrito!')">Agregar al carrito</button>
+        <div class="product-detail-card">
+          <img src="/Perfumes-AMAVI/assets/img/${product.image}" alt="${product.name}" />
+          <div class="detail-info">
+            <h2>${product.name}</h2>
+            <p class="text-muted">${product.notes}</p>
+            <p class="price">Precio: <strong>$${product.price.toLocaleString()}</strong></p>
+            <div class="actions">
+              <button class="btn-primary" onclick="alert('Añadido al carrito!')">Agregar al carrito</button>
+              <a href="/Perfumes-AMAVI/views/products.html" class="btn-ghost">Volver al catálogo</a>
+            </div>
+          </div>
         </div>
       `;
     } else {
-      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado</p>";
+      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado.</p>";
     }
   </script>
+
 </body>
 </html>
+
