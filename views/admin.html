@@ -28,7 +28,7 @@
   <!-- 🔸 CONTENIDO -->
   <main class="wrap" style="padding:80px 0;">
     <h2 class="center">Panel del Administrador</h2>
-    <p class="center text-muted">Gestiona los productos del catálogo</p>
+    <p class="center text-muted">Gestiona, edita y busca productos fácilmente</p>
 
     <!-- 🟢 FORMULARIO PARA NUEVO PRODUCTO -->
     <section class="form-card" style="max-width:600px;margin:40px auto;">
@@ -38,6 +38,8 @@
         <input name="name" required />
         <label>Descripción</label>
         <input name="notes" required />
+        <label>Tipo (dulce, fresco, amaderado...)</label>
+        <input name="type" required />
         <label>Precio</label>
         <input type="number" name="price" step="0.01" required />
         <label>Nombre de imagen (ej: p1.png)</label>
@@ -48,18 +50,30 @@
       </form>
     </section>
 
+    <!-- 🔍 BUSCADOR Y FILTRO -->
+    <section class="filters" style="max-width:600px;margin:0 auto 40px;text-align:center;">
+      <input id="searchInput" placeholder="Buscar por nombre..." style="padding:10px;width:60%;border-radius:8px;border:none;">
+      <select id="typeFilter" style="padding:10px;border-radius:8px;margin-left:10px;">
+        <option value="all">Todos los tipos</option>
+        <option value="dulce">Dulce</option>
+        <option value="fresco">Fresco</option>
+        <option value="amaderado">Amaderado</option>
+      </select>
+    </section>
+
     <!-- 🟣 LISTA DE PRODUCTOS -->
-    <section style="margin-top:60px;">
+    <section style="margin-top:30px;">
       <h3 class="center">Productos actuales</h3>
       <div id="adminProducts" class="products-grid" style="margin-top:30px;"></div>
     </section>
   </main>
 
+  <!-- 🔸 FOOTER -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
         <h4>AMAVI</h4>
-        <p>Panel administrativo para gestión de perfumes.</p>
+        <p>Panel administrativo con búsqueda y edición de productos.</p>
       </div>
       <div>
         <h5>Soporte</h5>
@@ -73,40 +87,52 @@
   <script>
     const adminGrid = document.getElementById("adminProducts");
     const form = document.getElementById("addProductForm");
+    const searchInput = document.getElementById("searchInput");
+    const typeFilter = document.getElementById("typeFilter");
 
-    // Cargar productos existentes
-    function renderAdminProducts() {
-      const allPerfumes = getPerfumes();
-      adminGrid.innerHTML = allPerfumes.map((p, index) => `
-        <div class="product-card">
-          <img src="/Perfumes-AMAVI/assets/img/${p.image}" alt="${p.name}" />
-          <h3>${p.name}</h3>
-          <p>${p.notes}</p>
-          <p class="price">$${p.price.toFixed(2)}</p>
-          <div style="margin-top:10px;">
-            <button class="btn-ghost" onclick="deleteProduct(${index})">Eliminar</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    // Obtener lista actual de perfumes (de localStorage o base)
+    // 🔹 Cargar productos existentes
     function getPerfumes() {
-      return JSON.parse(localStorage.getItem("amavi_perfumes") || JSON.stringify(perfumes));
+      return JSON.parse(localStorage.getItem("amavi_perfumes") || JSON.stringify(defaultPerfumes));
     }
 
-    // Guardar perfumes actualizados
     function savePerfumes(list) {
       localStorage.setItem("amavi_perfumes", JSON.stringify(list));
     }
 
-    // Agregar nuevo perfume
+    function renderAdminProducts() {
+      const allPerfumes = getPerfumes();
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedType = typeFilter.value;
+
+      const filtered = allPerfumes.filter(p => {
+        const matchName = p.name.toLowerCase().includes(searchTerm);
+        const matchType = selectedType === "all" || (p.type && p.type.toLowerCase() === selectedType);
+        return matchName && matchType;
+      });
+
+      adminGrid.innerHTML = filtered.length ? filtered.map((p, index) => `
+        <div class="product-card" id="product-${p.id}">
+          <img src="/Perfumes-AMAVI/assets/img/${p.image}" alt="${p.name}" />
+          <h3>${p.name}</h3>
+          <p>${p.notes}</p>
+          <small class="text-muted">${p.type || "Sin tipo"}</small>
+          <p class="price">$${p.price.toFixed(2)}</p>
+          <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;">
+            <button class="btn-ghost" onclick="editProduct(${p.id})">Editar</button>
+            <button class="btn-ghost" onclick="deleteProduct(${index})">Eliminar</button>
+          </div>
+        </div>
+      `).join("") : "<p class='center text-muted'>No se encontraron productos.</p>";
+    }
+
+    // ➕ Agregar nuevo perfume
     form.addEventListener("submit", e => {
       e.preventDefault();
       const newProduct = {
         id: Date.now(),
         name: form.name.value,
         notes: form.notes.value,
+        type: form.type.value,
         price: parseFloat(form.price.value),
         image: form.image.value
       };
@@ -118,7 +144,7 @@
       alert("✅ Producto agregado correctamente");
     });
 
-    // Eliminar perfume
+    // ❌ Eliminar perfume
     function deleteProduct(index) {
       const list = getPerfumes();
       list.splice(index, 1);
@@ -126,6 +152,55 @@
       renderAdminProducts();
       alert("🗑️ Producto eliminado");
     }
+
+    // ✏️ Editar perfume
+    function editProduct(id) {
+      const list = getPerfumes();
+      const perfume = list.find(p => p.id === id);
+      if (!perfume) return alert("No se encontró el producto.");
+
+      const container = document.getElementById(`product-${id}`);
+      container.innerHTML = `
+        <div class="card edit-form">
+          <h3>Editar perfume</h3>
+          <label>Nombre</label>
+          <input id="edit-name" value="${perfume.name}" />
+          <label>Descripción</label>
+          <input id="edit-notes" value="${perfume.notes}" />
+          <label>Tipo</label>
+          <input id="edit-type" value="${perfume.type || ''}" />
+          <label>Precio</label>
+          <input id="edit-price" type="number" step="0.01" value="${perfume.price}" />
+          <label>Imagen</label>
+          <input id="edit-image" value="${perfume.image}" />
+          <div class="center" style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
+            <button class="btn-primary" onclick="saveEdit(${id})">Guardar</button>
+            <button class="btn-ghost" onclick="renderAdminProducts()">Cancelar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 💾 Guardar cambios
+    function saveEdit(id) {
+      const list = getPerfumes();
+      const perfume = list.find(p => p.id === id);
+      if (!perfume) return;
+
+      perfume.name = document.getElementById("edit-name").value;
+      perfume.notes = document.getElementById("edit-notes").value;
+      perfume.type = document.getElementById("edit-type").value;
+      perfume.price = parseFloat(document.getElementById("edit-price").value);
+      perfume.image = document.getElementById("edit-image").value;
+
+      savePerfumes(list);
+      renderAdminProducts();
+      alert("✅ Cambios guardados correctamente");
+    }
+
+    // 🔄 Detectar cambios en filtros
+    searchInput.addEventListener("input", renderAdminProducts);
+    typeFilter.addEventListener("change", renderAdminProducts);
 
     renderAdminProducts();
   </script>
