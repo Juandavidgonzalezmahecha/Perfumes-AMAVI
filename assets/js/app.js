@@ -66,6 +66,39 @@ function addToCart(id) {
 
 // 🧩 Render automático si hay grilla en la página
 document.addEventListener("DOMContentLoaded", renderProducts);
+// 🟡 ACTUALIZAR CONTADOR DEL CARRITO EN NAVBAR
+function updateCartCount() {
+  const countSpan = document.getElementById("cartCount");
+  if (!countSpan) return;
+  const cart = getCart();
+  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+  countSpan.textContent = totalItems;
+}
+
+// Refrescar el contador cada vez que se agrega un producto
+document.addEventListener("DOMContentLoaded", () => {
+  renderProducts();
+  updateCartCount();
+});
+
+// Reemplaza tu función addToCart con esta versión:
+function addToCart(id) {
+  const perfume = perfumes.find(p => p.id === id);
+  if (!perfume) return;
+
+  const cart = getCart();
+  const found = cart.find(i => i.id === id);
+  if (found) {
+    found.qty += 1;
+  } else {
+    cart.push({ id: perfume.id, name: perfume.name, price: perfume.price, qty: 1 });
+  }
+
+  saveCart(cart);
+  alert(`🛍️ ${perfume.name} fue agregado al carrito`);
+  updateCartCount(); // 🔁 Actualiza el número en el icono
+}
+
 
 
 
