@@ -19,7 +19,11 @@
           <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
           <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
           <li><a href="/Perfumes-AMAVI/views/login.html" class="active">Ingresar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">🛒 <span id="cartCount" class="cart-count">0</span></a></li>
+          <li>
+            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
+              🛒 <span id="cartCount" class="cart-count">0</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -61,13 +65,25 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPT -->
+  <!-- 🔸 SCRIPTS -->
+  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
+    // Simulación de inicio de sesión
     document.getElementById('loginForm').addEventListener('submit', e => {
       e.preventDefault();
-      alert('Función de inicio de sesión próximamente disponible');
+      alert('🔐 Función de inicio de sesión próximamente disponible');
+    });
+
+    // 🔹 Actualizar contador del carrito
+    document.addEventListener("DOMContentLoaded", () => {
+      const countEl = document.getElementById("cartCount");
+      if (!countEl) return;
+      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      countEl.textContent = totalItems;
     });
   </script>
 </body>
 </html>
+
 
