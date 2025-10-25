@@ -20,7 +20,11 @@
           <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
           <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
           <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">🛒 <span id="cartCount" class="cart-count">0</span></a></li>
+          <li>
+            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
+              🛒 <span id="cartCount" class="cart-count">0</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -61,9 +65,12 @@
         <p>hola@amavi.com</p>
       </div>
     </div>
-    <p class="center text-muted" style="margin-top:20px;">&copy; 2025 Perfumes AMAVI — Todos los derechos reservados</p>
+    <p class="center text-muted" style="margin-top:20px;">
+      &copy; 2025 Perfumes AMAVI — Todos los derechos reservados
+    </p>
   </footer>
 
+  <!-- 🔸 SCRIPTS -->
   <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
     // Mostrar perfumes destacados (3 primeros del arreglo)
@@ -80,9 +87,19 @@
     } else {
       grid.innerHTML = "<p class='center text-muted'>No hay productos disponibles.</p>";
     }
+
+    // 🔹 Actualizar contador del carrito en el header
+    document.addEventListener("DOMContentLoaded", () => {
+      const countEl = document.getElementById("cartCount");
+      if (!countEl) return;
+      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      countEl.textContent = totalItems;
+    });
   </script>
 </body>
 </html>
+
 
 
 
