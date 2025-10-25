@@ -1,48 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Carrito de Compras - AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
-  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito - AMAVI</title>
+  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
+  <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- 🔸 CABECERA -->
+  <!-- 🔸 NAVBAR -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
-      <nav class="main-nav" aria-label="Navegación principal">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
         <ul>
-          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/cart.html" class="active">Carrito</a></li>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="cart.html" class="active">🛒 Carrito (<span id="cartCount">0</span>)</a></li>
+          <li><a href="login.html">Ingresar</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO DEL CARRITO -->
-  <main class="wrap" style="padding:80px 0;">
-    <h2 class="center">Tu Carrito de Compras</h2>
-    <p class="center text-muted">Revisa los productos seleccionados antes de finalizar tu pedido.</p>
+  <!-- 🔸 CONTENIDO -->
+  <main class="wrap" style="padding:60px 0;">
+    <h2 class="center">Tu carrito de compras</h2>
+    <p class="center text-muted">Revisa tus productos antes de continuar con la compra.</p>
 
     <div id="cartContainer" style="margin-top:40px;"></div>
 
     <div class="center" style="margin-top:40px;">
       <button id="clearCart" class="btn-ghost">Vaciar carrito</button>
-      <button id="checkout" class="btn-primary">Finalizar compra</button>
     </div>
   </main>
 
-  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
         <h4>AMAVI</h4>
-        <p>Perfumes personalizados para cada esencia.</p>
+        <p>Perfumes artesanales y personalizados.</p>
       </div>
       <div>
         <h5>Contacto</h5>
@@ -51,81 +50,59 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPT -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
+  <script src="../assets/js/app.js"></script>
   <script>
-    const cartContainer = document.getElementById("cartContainer");
+    const container = document.getElementById("cartContainer");
+    const countEl = document.getElementById("cartCount");
+    const clearBtn = document.getElementById("clearCart");
 
     function renderCart() {
       const cart = getCart();
+      countEl.textContent = cart.reduce((a, b) => a + b.qty, 0);
+
       if (cart.length === 0) {
-        cartContainer.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
+        container.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
         return;
       }
 
       let total = 0;
-      cartContainer.innerHTML = `
-        <div class="products-grid" style="grid-template-columns:1fr;">
+      container.innerHTML = `
+        <div class="products-grid">
           ${cart.map(item => {
             total += item.price * item.qty;
             return `
-              <div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:20px;">
-                <div>
-                  <h3>${item.name}</h3>
-                  <p class="text-muted">Cantidad: 
-                    <button onclick="updateQty(${item.id}, -1)" class="btn-ghost" style="padding:2px 8px;">−</button>
-                    <strong>${item.qty}</strong>
-                    <button onclick="updateQty(${item.id}, 1)" class="btn-ghost" style="padding:2px 8px;">+</button>
-                  </p>
-                  <p class="price">$${(item.price * item.qty).toFixed(2)}</p>
-                </div>
-                <button class="btn-secondary" onclick="removeItem(${item.id})">Eliminar</button>
+              <div class="card center">
+                <img src="../assets/img/p${item.id}.png" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <p>Cantidad: ${item.qty}</p>
+                <p>Precio: $${item.price.toFixed(2)}</p>
+                <p>Subtotal: $${(item.price * item.qty).toFixed(2)}</p>
+                <button class="btn-ghost" onclick="removeItem(${item.id})">Eliminar</button>
               </div>
             `;
           }).join("")}
         </div>
-        <h3 class="center" style="margin-top:30px;">Total: $${total.toFixed(2)}</h3>
+        <div class="center" style="margin-top:30px;">
+          <h3>Total: $${total.toFixed(2)}</h3>
+          <button class="btn-primary" onclick="alert('Compra realizada exitosamente 🎉')">Finalizar compra</button>
+        </div>
       `;
-    }
-
-    function updateQty(id, change) {
-      const cart = getCart();
-      const item = cart.find(i => i.id === id);
-      if (!item) return;
-      item.qty += change;
-      if (item.qty <= 0) {
-        const index = cart.indexOf(item);
-        cart.splice(index, 1);
-      }
-      saveCart(cart);
-      renderCart();
     }
 
     function removeItem(id) {
       let cart = getCart();
-      cart = cart.filter(i => i.id !== id);
+      cart = cart.filter(item => item.id !== id);
       saveCart(cart);
       renderCart();
     }
 
-    document.getElementById("clearCart").addEventListener("click", () => {
-      localStorage.removeItem("amavi_cart");
+    clearBtn.addEventListener("click", () => {
+      saveCart([]);
       renderCart();
     });
 
-    document.getElementById("checkout").addEventListener("click", () => {
-      const cart = getCart();
-      if (cart.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
-      }
-      alert("✨ Gracias por tu compra. Tu pedido está siendo procesado.");
-      localStorage.removeItem("amavi_cart");
-      renderCart();
-    });
-
-    // Inicializar renderizado
-    document.addEventListener("DOMContentLoaded", renderCart);
+    renderCart();
   </script>
 </body>
 </html>
+
