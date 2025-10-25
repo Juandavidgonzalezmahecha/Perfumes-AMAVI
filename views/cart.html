@@ -4,29 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carrito - AMAVI</title>
-  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
-  <link href="../assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- 🔸 NAVBAR -->
+  <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="../index.html">AMAVI</a>
-      <nav class="main-nav">
+      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <nav class="main-nav" aria-label="Navegación principal">
         <ul>
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="products.html">Catálogo</a></li>
-          <li><a href="personalizar.html">Personalizar</a></li>
-          <li><a href="cart.html" class="active">🛒 Carrito (<span id="cartCount">0</span>)</a></li>
-          <li><a href="login.html">Ingresar</a></li>
+          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
+          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
+          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
+          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
+          <li>
+            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link active">
+              🛒 <span id="cartCount" class="cart-count">0</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO -->
-  <main class="wrap" style="padding:60px 0;">
+  <!-- 🔸 CONTENIDO PRINCIPAL -->
+  <main class="wrap" style="padding:80px 0;">
     <h2 class="center">Tu carrito de compras</h2>
     <p class="center text-muted">Revisa tus productos antes de continuar con la compra.</p>
 
@@ -37,6 +41,7 @@
     </div>
   </main>
 
+  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -50,15 +55,17 @@
     </div>
   </footer>
 
-  <script src="../assets/js/app.js"></script>
+  <!-- 🔸 SCRIPTS -->
+  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
   <script>
     const container = document.getElementById("cartContainer");
-    const countEl = document.getElementById("cartCount");
     const clearBtn = document.getElementById("clearCart");
 
     function renderCart() {
       const cart = getCart();
-      countEl.textContent = cart.reduce((a, b) => a + b.qty, 0);
+      const countEl = document.getElementById("cartCount");
+      const totalItems = cart.reduce((a, b) => a + b.qty, 0);
+      countEl.textContent = totalItems;
 
       if (cart.length === 0) {
         container.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
@@ -72,7 +79,7 @@
             total += item.price * item.qty;
             return `
               <div class="card center">
-                <img src="../assets/img/p${item.id}.png" alt="${item.name}">
+                <img src="/Perfumes-AMAVI/assets/img/p${item.id}.png" alt="${item.name}">
                 <h3>${item.name}</h3>
                 <p>Cantidad: ${item.qty}</p>
                 <p>Precio: $${item.price.toFixed(2)}</p>
@@ -84,7 +91,7 @@
         </div>
         <div class="center" style="margin-top:30px;">
           <h3>Total: $${total.toFixed(2)}</h3>
-          <button class="btn-primary" onclick="alert('Compra realizada exitosamente 🎉')">Finalizar compra</button>
+          <button class="btn-primary" onclick="finalizarCompra()">Finalizar compra</button>
         </div>
       `;
     }
@@ -96,13 +103,20 @@
       renderCart();
     }
 
+    function finalizarCompra() {
+      alert('🎉 ¡Compra realizada exitosamente!');
+      saveCart([]);
+      renderCart();
+    }
+
     clearBtn.addEventListener("click", () => {
       saveCart([]);
       renderCart();
     });
 
-    renderCart();
+    document.addEventListener("DOMContentLoaded", renderCart);
   </script>
 </body>
 </html>
+
 
