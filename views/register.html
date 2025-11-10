@@ -3,31 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registro - AMAVI</title>
+  <title>Registrarse - AMAVI</title>
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="auth-links">
+            <a href="login.html" class="btn-primary">Ingresar</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
   <main class="center" style="padding:80px 0">
     <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Crear cuenta</h2>
       <form id="registerForm">
-        <label class="text-muted">Nombre completo</label>
-        <input type="text" name="name" required />
+        <label class="text-muted">Nombre</label>
+        <input name="name" required />
         <label class="text-muted">Email</label>
         <input type="email" name="email" required />
         <label class="text-muted">Contraseña</label>
         <input type="password" name="password" required />
-        <div style="margin-top:12px;display:flex;gap:10px;justify-content:space-between;align-items:center">
-          <button class="btn-primary" type="submit">Registrar</button>
-          <a href="login.html" class="btn-ghost">Iniciar sesión</a>
+        <div style="margin-top:12px">
+          <button class="btn-primary" type="submit">Crear cuenta</button>
         </div>
       </form>
     </div>
   </main>
 
-  <!-- 🔥 Firebase Register -->
   <script type="module">
-    import { auth } from "/Perfumes-AMAVI/assets/js/firebase.js";
+    import { auth } from "../assets/js/firebase.js";
     import {
       createUserWithEmailAndPassword,
       updateProfile,
@@ -45,17 +60,20 @@
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
         await updateProfile(user, { displayName: name });
         await sendEmailVerification(user);
-        alert("✅ Cuenta creada correctamente. Verifica tu correo antes de iniciar sesión.");
-        window.location.href = "/Perfumes-AMAVI/views/login.html";
-      } catch (err) {
-        alert("❌ Error al registrar: " + err.message);
+
+        alert(`✅ Cuenta creada con éxito. Se envió un correo de verificación a ${email}`);
+        window.location.href = "login.html";
+      } catch (error) {
+        alert("❌ Error: " + error.message);
       }
     });
   </script>
 </body>
 </html>
+
 
 
 
