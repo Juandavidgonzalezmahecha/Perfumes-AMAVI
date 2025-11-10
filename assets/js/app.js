@@ -1,8 +1,8 @@
 // 🟣 Datos base de perfumes (valores iniciales)
 const defaultPerfumes = [
-  { id: 1, name: "AMAVI Bleu", price: 79, notes: "Aromas cítricos y madera.", image: "imagenperfume2.jpg" },
-  { id: 2, name: "AMAVI Noir", price: 89, notes: "Notas intensas y ambaradas.", image: "imagenperfume3.jpg" },
-  { id: 3, name: "AMAVI Pure", price: 69, notes: "Fresco, floral y limpio.", image: "imagenperfume4.jpg" }
+  { id: 1, name: "AMAVI Bleu", price: 79, notes: "Aromas cítricos y madera.", image: "Imagenperfume2.jpg" },
+  { id: 2, name: "AMAVI Noir", price: 89, notes: "Notas intensas y ambaradas.", image: "Imagenperfume3.jpg" },
+  { id: 3, name: "AMAVI Pure", price: 69, notes: "Fresco, floral y limpio.", image: "Imagenperfume4.jpg" }
 ];
 
 // 🧠 Obtener perfumes (desde localStorage o por defecto)
