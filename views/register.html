@@ -1,91 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Registrarse - AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
-  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
+  <title>Registro - AMAVI</title>
+  <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-
-  <!-- 🔸 CABECERA -->
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
-      <nav class="main-nav" aria-label="Navegación principal">
-        <ul>
-          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li>
-            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
-              🛒 <span id="cartCount" class="cart-count">0</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- 🔸 FORMULARIO DE REGISTRO -->
   <main class="center" style="padding:80px 0">
-    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.05),transparent);padding:32px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+    <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Crear cuenta</h2>
       <form id="registerForm">
         <label class="text-muted">Nombre completo</label>
-        <input name="name" placeholder="Tu nombre" required />
-
-        <label class="text-muted">Correo electrónico</label>
-        <input type="email" name="email" placeholder="ejemplo@correo.com" required />
-
+        <input type="text" name="name" required />
+        <label class="text-muted">Email</label>
+        <input type="email" name="email" required />
         <label class="text-muted">Contraseña</label>
-        <input type="password" name="password" placeholder="********" required />
-
-        <div style="margin-top:16px">
-          <button class="btn-primary" type="submit">Crear cuenta</button>
+        <input type="password" name="password" required />
+        <div style="margin-top:12px;display:flex;gap:10px;justify-content:space-between;align-items:center">
+          <button class="btn-primary" type="submit">Registrar</button>
+          <a href="login.html" class="btn-ghost">Iniciar sesión</a>
         </div>
       </form>
-      <p class="center text-muted" style="margin-top:16px;">
-        ¿Ya tienes cuenta? <a href="/Perfumes-AMAVI/views/login.html">Inicia sesión aquí</a>
-      </p>
     </div>
   </main>
 
-  <!-- 🔸 PIE DE PÁGINA -->
-  <footer class="site-footer">
-    <div class="wrap footer-grid">
-      <div>
-        <h4>AMAVI</h4>
-        <p>Perfumes personalizados para cada esencia.</p>
-      </div>
-      <div>
-        <h5>Contacto</h5>
-        <p>hola@amavi.com</p>
-      </div>
-    </div>
-  </footer>
+  <!-- 🔥 Firebase Register -->
+  <script type="module">
+    import { auth } from "/Perfumes-AMAVI/assets/js/firebase.js";
+    import {
+      createUserWithEmailAndPassword,
+      updateProfile,
+      sendEmailVerification
+    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-  <!-- 🔸 SCRIPTS -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
-  <script>
-    // Simulación de registro
-    document.getElementById('registerForm').addEventListener('submit', e => {
+    const form = document.getElementById('registerForm');
+
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      alert('📝 Función de registro próximamente disponible');
-    });
+      const name = form.name.value;
+      const email = form.email.value;
+      const password = form.password.value;
 
-    // 🔹 Actualizar contador del carrito
-    document.addEventListener("DOMContentLoaded", () => {
-      const countEl = document.getElementById("cartCount");
-      if (!countEl) return;
-      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
-      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-      countEl.textContent = totalItems;
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        await updateProfile(user, { displayName: name });
+        await sendEmailVerification(user);
+        alert("✅ Cuenta creada correctamente. Verifica tu correo antes de iniciar sesión.");
+        window.location.href = "/Perfumes-AMAVI/views/login.html";
+      } catch (err) {
+        alert("❌ Error al registrar: " + err.message);
+      }
     });
   </script>
 </body>
 </html>
+
 
 
