@@ -1,40 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Detalle de Perfume - AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
-  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
+  <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-
-  <!-- 🔸 CABECERA -->
+  <!-- 🔸 HEADER -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
         <ul>
-          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html" class="active">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li>
-            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
-              🛒 <span id="cartCount" class="cart-count">0</span>
-            </a>
-          </li>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="user-info"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO PRINCIPAL -->
-  <main class="wrap" style="padding:60px 0;">
-    <div id="productDetail" class="center"></div>
+  <!-- 🔸 DETALLE DE PRODUCTO -->
+  <main class="container" style="padding:60px 0;">
+    <div id="productDetail"></div>
   </main>
 
-  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -48,10 +41,38 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPTS -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
-  <script>
-    // Obtener ID del perfume desde la URL
+  <script src="../assets/js/app.js"></script>
+
+  <script type="module">
+    import { auth } from "../assets/js/firebase.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+    const userInfo = document.getElementById("user-info");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const name = user.displayName || "Usuario";
+        const photo = user.photoURL || "../assets/img/user.png";
+
+        userInfo.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <span>${name}</span>
+            <button id="logoutBtn" class="btn-ghost">Salir</button>
+          </div>
+        `;
+
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+          await signOut(auth);
+          alert("👋 Sesión cerrada");
+          window.location.href = "../index.html";
+        });
+      } else {
+        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+      }
+    });
+
+    // Mostrar detalle del producto
     const params = new URLSearchParams(window.location.search);
     const id = parseInt(params.get("id"));
     const product = perfumes.find(p => p.id === id);
@@ -60,28 +81,19 @@
     if (product) {
       detail.innerHTML = `
         <div class="card center" style="max-width:480px;margin:auto;">
-          <img src="/Perfumes-AMAVI/assets/img/${product.image}" alt="${product.name}" />
+          <img src="../assets/img/${product.image}" alt="${product.name}" />
           <h2>${product.name}</h2>
           <p class="text-muted">${product.notes}</p>
-          <p>Precio: <strong>$${product.price.toFixed(2)}</strong></p>
+          <p>Precio: <strong>$${product.price.toLocaleString()}</strong></p>
           <button class="btn-primary" onclick="addToCart(${product.id})">Agregar al carrito</button>
-          <a class="btn-ghost" href="/Perfumes-AMAVI/views/products.html" style="display:block;margin-top:12px;">Volver al catálogo</a>
         </div>
       `;
     } else {
-      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado.</p>";
+      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado</p>";
     }
-
-    // 🔹 Actualizar contador del carrito
-    document.addEventListener("DOMContentLoaded", () => {
-      const countEl = document.getElementById("cartCount");
-      if (!countEl) return;
-      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
-      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-      countEl.textContent = totalItems;
-    });
   </script>
 </body>
 </html>
+
 
 
