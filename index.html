@@ -5,21 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Perfumes AMAVI</title>
   <link rel="icon" href="assets/img/LOGOAMAVI.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+
   <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="index.html">AMAVI</a>
       <nav class="main-nav">
-        <ul>
+        <ul id="nav-links">
           <li><a href="index.html" class="active">Inicio</a></li>
           <li><a href="views/products.html">Catálogo</a></li>
           <li><a href="views/personalizar.html">Personalizar</a></li>
           <li><a href="views/cart.html">🛒 <span id="cart-count">0</span></a></li>
-          <li id="user-info"></li>
+          <li id="auth-section">
+            <a href="views/login.html" class="btn-primary">Ingresar</a>
+          </li>
         </ul>
       </nav>
     </div>
@@ -65,37 +67,56 @@
 
   <script src="assets/js/app.js"></script>
 
+  <!-- 🔹 Firebase y autenticación -->
   <script type="module">
     import { auth } from "./assets/js/firebase.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-    const userInfo = document.getElementById("user-info");
+    const authSection = document.getElementById('auth-section');
 
+    // Detectar si hay usuario activo
     onAuthStateChanged(auth, user => {
       if (user) {
         const name = user.displayName || "Usuario";
-        const photo = user.photoURL || "assets/img/user.png";
-
-        userInfo.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+        const photo = user.photoURL || "assets/img/default-user.png";
+        authSection.innerHTML = `
+          <div class="user-info">
+            <img src="${photo}" alt="Foto" class="user-photo" />
             <span>${name}</span>
-            <button id="logoutBtn" class="btn-ghost">Salir</button>
+            <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
           </div>
         `;
 
+        // Cerrar sesión
         document.getElementById("logoutBtn").addEventListener("click", async () => {
           await signOut(auth);
-          alert("👋 Sesión cerrada");
+          alert("👋 Sesión cerrada.");
           window.location.reload();
         });
       } else {
-        userInfo.innerHTML = `<a href="views/login.html" class="btn-primary">Ingresar</a>`;
+        authSection.innerHTML = `<a href="views/login.html" class="btn-primary">Ingresar</a>`;
       }
     });
   </script>
+
+  <style>
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-photo {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
+
 </body>
 </html>
+
 
 
 
