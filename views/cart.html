@@ -1,35 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carrito - AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
-  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
+  <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-
   <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
-      <nav class="main-nav" aria-label="Navegación principal">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
         <ul>
-          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li>
-            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link active">
-              🛒 <span id="cartCount" class="cart-count">0</span>
-            </a>
-          </li>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="cart.html" class="active">🛒 <span id="cart-count">0</span></a></li>
+          <li id="user-info"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO PRINCIPAL -->
+  <!-- 🔸 CONTENIDO -->
   <main class="wrap" style="padding:80px 0;">
     <h2 class="center">Tu carrito de compras</h2>
     <p class="center text-muted">Revisa tus productos antes de continuar con la compra.</p>
@@ -41,7 +36,6 @@
     </div>
   </main>
 
-  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -55,18 +49,42 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPTS -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
-  <script>
+  <script src="../assets/js/app.js"></script>
+
+  <script type="module">
+    import { auth } from "../assets/js/firebase.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+    const userInfo = document.getElementById("user-info");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const name = user.displayName || "Usuario";
+        const photo = user.photoURL || "../assets/img/user.png";
+
+        userInfo.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <span>${name}</span>
+            <button id="logoutBtn" class="btn-ghost">Salir</button>
+          </div>
+        `;
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+          await signOut(auth);
+          alert("👋 Sesión cerrada");
+          window.location.href = "../index.html";
+        });
+      } else {
+        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+      }
+    });
+
+    // 🔹 Lógica del carrito
     const container = document.getElementById("cartContainer");
     const clearBtn = document.getElementById("clearCart");
 
     function renderCart() {
       const cart = getCart();
-      const countEl = document.getElementById("cartCount");
-      const totalItems = cart.reduce((a, b) => a + b.qty, 0);
-      countEl.textContent = totalItems;
-
       if (cart.length === 0) {
         container.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
         return;
@@ -79,35 +97,35 @@
             total += item.price * item.qty;
             return `
               <div class="card center">
-                <img src="/Perfumes-AMAVI/assets/img/p${item.id}.png" alt="${item.name}">
+                <img src="../assets/img/${item.image || 'imagenperfume1.png'}" alt="${item.name}" />
                 <h3>${item.name}</h3>
                 <p>Cantidad: ${item.qty}</p>
-                <p>Precio: $${item.price.toFixed(2)}</p>
-                <p>Subtotal: $${(item.price * item.qty).toFixed(2)}</p>
+                <p>Precio: $${item.price.toLocaleString()}</p>
+                <p>Subtotal: $${(item.price * item.qty).toLocaleString()}</p>
                 <button class="btn-ghost" onclick="removeItem(${item.id})">Eliminar</button>
               </div>
             `;
           }).join("")}
         </div>
         <div class="center" style="margin-top:30px;">
-          <h3>Total: $${total.toFixed(2)}</h3>
+          <h3>Total: $${total.toLocaleString()}</h3>
           <button class="btn-primary" onclick="finalizarCompra()">Finalizar compra</button>
         </div>
       `;
     }
 
-    function removeItem(id) {
+    window.removeItem = id => {
       let cart = getCart();
       cart = cart.filter(item => item.id !== id);
       saveCart(cart);
       renderCart();
-    }
+    };
 
-    function finalizarCompra() {
-      alert('🎉 ¡Compra realizada exitosamente!');
+    window.finalizarCompra = () => {
+      alert("🎉 ¡Compra realizada exitosamente!");
       saveCart([]);
       renderCart();
-    }
+    };
 
     clearBtn.addEventListener("click", () => {
       saveCart([]);
@@ -118,5 +136,6 @@
   </script>
 </body>
 </html>
+
 
 
