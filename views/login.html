@@ -7,92 +7,106 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="auth-links">
+            <a href="login.html" class="btn-primary">Ingresar</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
   <main class="center" style="padding:80px 0">
     <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Ingresar</h2>
+
       <form id="loginForm">
         <label class="text-muted">Email</label>
         <input type="email" name="email" required />
         <label class="text-muted">Contraseña</label>
         <input type="password" name="password" required />
+
         <div style="margin-top:12px;display:flex;gap:10px;justify-content:space-between;align-items:center">
           <button class="btn-primary" type="submit">Entrar</button>
           <a href="register.html" class="btn-ghost">Registrarse</a>
         </div>
-        <div style="margin-top:10px">
-          <a href="#" id="forgot" class="text-muted">¿Olvidaste tu contraseña?</a>
+
+        <div style="margin-top:18px" class="center">
+          <button type="button" id="googleBtn" class="btn-ghost">Iniciar con Google</button>
         </div>
+
+        <p style="margin-top:12px;font-size:14px;">
+          <a href="#" id="forgotLink" style="color:var(--accent)">¿Olvidaste tu contraseña?</a>
+        </p>
       </form>
     </div>
   </main>
 
-  <!-- 🔥 Firebase Login -->
   <script type="module">
-    import { auth } from "/Perfumes-AMAVI/assets/js/firebase.js";
+    import { auth } from "../assets/js/firebase.js";
     import {
       signInWithEmailAndPassword,
-      sendPasswordResetEmail,
       GoogleAuthProvider,
-      signInWithPopup
+      signInWithPopup,
+      sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
     const form = document.getElementById('loginForm');
-    const forgot = document.getElementById('forgot');
+    const googleBtn = document.getElementById('googleBtn');
+    const forgotLink = document.getElementById('forgotLink');
 
-    // 🔹 Iniciar sesión con correo y contraseña
+    // 🔹 Inicio de sesión con email
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const email = form.email.value;
       const password = form.password.value;
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        if (!user.emailVerified) {
-          alert("⚠️ Debes verificar tu correo electrónico antes de iniciar sesión.");
-          return;
-        }
-        alert(`¡Bienvenido ${user.displayName || user.email}!`);
-        window.location.href = "/Perfumes-AMAVI/index.html";
-      } catch (err) {
-        alert("❌ Error al iniciar sesión: " + err.message);
+        await signInWithEmailAndPassword(auth, email, password);
+        alert('✅ Sesión iniciada correctamente');
+        window.location.href = '../index.html';
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
+      }
+    });
+
+    // 🔹 Inicio con Google
+    googleBtn.addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        alert('✅ Sesión iniciada con Google');
+        window.location.href = '../index.html';
+      } catch (error) {
+        alert('❌ Error: ' + error.message);
       }
     });
 
     // 🔹 Recuperar contraseña
-    forgot.addEventListener('click', async e => {
+    forgotLink.addEventListener('click', async e => {
       e.preventDefault();
-      const email = prompt("Introduce tu correo electrónico para restablecer tu contraseña:");
-      if (!email) return;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("📩 Se envió un enlace de recuperación a tu correo.");
-      } catch (err) {
-        alert("❌ Error: " + err.message);
-      }
-    });
-
-    // 🔹 Login con Google
-    const googleBtn = document.createElement("button");
-    googleBtn.textContent = "Ingresar con Google";
-    googleBtn.className = "btn-primary";
-    googleBtn.style.width = "100%";
-    googleBtn.style.marginTop = "15px";
-    form.after(googleBtn);
-
-    googleBtn.addEventListener("click", async () => {
-      const provider = new GoogleAuthProvider();
-      try {
-        await signInWithPopup(auth, provider);
-        alert("✅ Sesión iniciada con Google");
-        window.location.href = "/Perfumes-AMAVI/index.html";
-      } catch (err) {
-        alert("❌ Error al iniciar sesión con Google: " + err.message);
+      const email = prompt('Ingresa tu correo para restablecer la contraseña:');
+      if (email) {
+        try {
+          await sendPasswordResetEmail(auth, email);
+          alert('📩 Se envió un enlace para restablecer tu contraseña.');
+        } catch (error) {
+          alert('❌ Error: ' + error.message);
+        }
       }
     });
   </script>
 </body>
 </html>
+
 
 
 
