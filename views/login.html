@@ -7,6 +7,7 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+  <!-- 🔹 NAVBAR -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
@@ -24,6 +25,7 @@
     </div>
   </header>
 
+  <!-- 🔹 FORMULARIO DE LOGIN -->
   <main class="center" style="padding:80px 0">
     <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Ingresar</h2>
@@ -31,6 +33,7 @@
       <form id="loginForm">
         <label class="text-muted">Email</label>
         <input type="email" name="email" required />
+
         <label class="text-muted">Contraseña</label>
         <input type="password" name="password" required />
 
@@ -40,7 +43,7 @@
         </div>
 
         <div style="margin-top:18px" class="center">
-          <button type="button" id="googleBtn" class="btn-ghost">Iniciar con Google</button>
+          <button type="button" id="googleLogin" class="btn-ghost">Iniciar con Google</button>
         </div>
 
         <p style="margin-top:12px;font-size:14px;">
@@ -50,61 +53,62 @@
     </div>
   </main>
 
+  <!-- 🔹 SCRIPTS DE FIREBASE -->
   <script type="module">
-    import { auth } from "../assets/js/firebase.js";
     import {
-      signInWithEmailAndPassword,
-      GoogleAuthProvider,
-      signInWithPopup,
-      sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+      auth,
+      loginUser,
+      loginWithGoogle,
+      recoverPassword
+    } from "../assets/js/firebase.js";
 
-    const form = document.getElementById('loginForm');
-    const googleBtn = document.getElementById('googleBtn');
-    const forgotLink = document.getElementById('forgotLink');
+    const form = document.getElementById("loginForm");
+    const googleBtn = document.getElementById("googleLogin");
+    const forgotLink = document.getElementById("forgotLink");
 
-    // 🔹 Inicio de sesión con email
-    form.addEventListener('submit', async e => {
+    // 🔸 Iniciar sesión con correo
+    form.addEventListener("submit", async e => {
       e.preventDefault();
-      const email = form.email.value;
-      const password = form.password.value;
+      const email = form.email.value.trim();
+      const password = form.password.value.trim();
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert('✅ Sesión iniciada correctamente');
-        window.location.href = '../index.html';
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
+        await loginUser(email, password);
+        alert("✅ Sesión iniciada correctamente");
+        window.location.href = "../index.html";
+      } catch (err) {
+        alert("❌ Error: " + err.message);
       }
     });
 
-    // 🔹 Inicio con Google
-    googleBtn.addEventListener('click', async () => {
+    // 🔸 Iniciar sesión con Google
+    googleBtn.addEventListener("click", async () => {
       try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        alert('✅ Sesión iniciada con Google');
-        window.location.href = '../index.html';
-      } catch (error) {
-        alert('❌ Error: ' + error.message);
+        await loginWithGoogle();
+        alert("✅ Sesión iniciada con Google");
+        window.location.href = "../index.html";
+      } catch (err) {
+        alert("❌ Error: " + err.message);
       }
     });
 
-    // 🔹 Recuperar contraseña
-    forgotLink.addEventListener('click', async e => {
+    // 🔸 Recuperar contraseña
+    forgotLink.addEventListener("click", async e => {
       e.preventDefault();
-      const email = prompt('Ingresa tu correo para restablecer la contraseña:');
+      const email = prompt("Ingresa tu correo para restablecer la contraseña:");
       if (email) {
         try {
-          await sendPasswordResetEmail(auth, email);
-          alert('📩 Se envió un enlace para restablecer tu contraseña.');
-        } catch (error) {
-          alert('❌ Error: ' + error.message);
+          await recoverPassword(email);
+          alert("📩 Se ha enviado un enlace a tu correo para restablecer la contraseña.");
+        } catch (err) {
+          alert("❌ Error: " + err.message);
         }
       }
     });
   </script>
 </body>
+</html>
+
 </html>
 
 
