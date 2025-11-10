@@ -1,29 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Personaliza tu Perfume - AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
-  <link href="/Perfumes-AMAVI/assets/css/style.css" rel="stylesheet" />
+  <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
+  <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-
   <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
+      <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
         <ul>
-          <li><a href="/Perfumes-AMAVI/">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html" class="active">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li>
-            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
-              🛒 <span id="cartCount" class="cart-count">0</span>
-            </a>
-          </li>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html" class="active">Personalizar</a></li>
+          <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="user-info"></li>
         </ul>
       </nav>
     </div>
@@ -56,7 +51,7 @@
         <option value="intensa">Intensa (8h+)</option>
       </select>
 
-      <div style="margin-top:20px;" class="center">
+      <div class="center" style="margin-top:20px;">
         <button type="submit" class="btn-primary">Generar mi perfume</button>
       </div>
     </form>
@@ -78,9 +73,37 @@
     </div>
   </footer>
 
-  <!-- 🔸 SCRIPT -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
-  <script>
+  <script src="../assets/js/app.js"></script>
+
+  <script type="module">
+    import { auth } from "../assets/js/firebase.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+    const userInfo = document.getElementById("user-info");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const name = user.displayName || "Usuario";
+        const photo = user.photoURL || "../assets/img/user.png";
+
+        userInfo.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <span>${name}</span>
+            <button id="logoutBtn" class="btn-ghost">Salir</button>
+          </div>
+        `;
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+          await signOut(auth);
+          alert("👋 Sesión cerrada");
+          window.location.href = "../index.html";
+        });
+      } else {
+        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+      }
+    });
+
+    // 🔹 Lógica del formulario
     const form = document.getElementById("quizForm");
     const result = document.getElementById("resultado");
 
@@ -88,40 +111,25 @@
       e.preventDefault();
       const aroma = form.aroma.value;
       const ocasion = form.ocasion.value;
-      const duracion = form.duracion.value;
 
       let recomendacion = "";
-
-      if (aroma === "dulce" && ocasion === "noche") {
-        recomendacion = "AMAVI Noire — notas de vainilla, ámbar y jazmín.";
-      } else if (aroma === "fresco" && ocasion === "diario") {
-        recomendacion = "AMAVI Breeze — notas cítricas y florales para un día activo.";
-      } else if (aroma === "amaderado" && ocasion === "elegante") {
-        recomendacion = "AMAVI Royal — fragancia sofisticada con toques de sándalo y cedro.";
-      } else {
-        recomendacion = "AMAVI Essence — una mezcla equilibrada adaptada a tu estilo.";
-      }
+      if (aroma === "dulce" && ocasion === "noche") recomendacion = "AMAVI Noire — vainilla, ámbar y jazmín.";
+      else if (aroma === "fresco" && ocasion === "diario") recomendacion = "AMAVI Breeze — notas cítricas y florales.";
+      else if (aroma === "amaderado" && ocasion === "elegante") recomendacion = "AMAVI Royal — sándalo y cedro.";
+      else recomendacion = "AMAVI Essence — mezcla adaptada a tu estilo.";
 
       result.innerHTML = `
         <div class="card" style="max-width:500px;margin:auto;">
           <h3>Tu recomendación personalizada</h3>
           <p>${recomendacion}</p>
-          <a class="btn-secondary" href="/Perfumes-AMAVI/views/products.html">Ver perfumes similares</a>
+          <a class="btn-secondary" href="products.html">Ver perfumes similares</a>
         </div>
       `;
       form.reset();
     });
-
-    // 🔹 Actualizar contador del carrito
-    document.addEventListener("DOMContentLoaded", () => {
-      const countEl = document.getElementById("cartCount");
-      if (!countEl) return;
-      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
-      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-      countEl.textContent = totalItems;
-    });
   </script>
 </body>
 </html>
+
 
 
