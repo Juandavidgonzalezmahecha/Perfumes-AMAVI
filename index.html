@@ -4,27 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Perfumes AMAVI</title>
-  <link rel="icon" href="/Perfumes-AMAVI/assets/img/LOGOAMAVI.png" />
+  <link rel="icon" href="assets/img/LOGOAMAVI.png" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/Perfumes-AMAVI/assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-
   <!-- 🔸 CABECERA -->
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="/Perfumes-AMAVI/">AMAVI</a>
-      <nav class="main-nav" aria-label="Navegación principal">
+      <a class="brand" href="index.html">AMAVI</a>
+      <nav class="main-nav">
         <ul>
-          <li><a href="/Perfumes-AMAVI/" class="active">Inicio</a></li>
-          <li><a href="/Perfumes-AMAVI/views/products.html">Catálogo</a></li>
-          <li><a href="/Perfumes-AMAVI/views/personalizar.html">Personalizar</a></li>
-          <li><a href="/Perfumes-AMAVI/views/login.html">Ingresar</a></li>
-          <li>
-            <a href="/Perfumes-AMAVI/views/cart.html" class="cart-link">
-              🛒 <span id="cartCount" class="cart-count">0</span>
-            </a>
-          </li>
+          <li><a href="index.html" class="active">Inicio</a></li>
+          <li><a href="views/products.html">Catálogo</a></li>
+          <li><a href="views/personalizar.html">Personalizar</a></li>
+          <li><a href="views/cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="user-info"></li>
         </ul>
       </nav>
     </div>
@@ -37,11 +32,11 @@
         <div class="hero-copy">
           <h1>Eleva tu esencia con fragancias que cuentan historias</h1>
           <p class="lead">Perfumes artesanales, mezcla personalizada y entrega rápida. Descubre tu aroma único.</p>
-          <a class="btn-primary" href="/Perfumes-AMAVI/views/products.html">Ver Catálogo</a>
-          <a class="btn-ghost" href="/Perfumes-AMAVI/views/personalizar.html">Personalizar Perfume</a>
+          <a class="btn-primary" href="views/products.html">Ver Catálogo</a>
+          <a class="btn-ghost" href="views/personalizar.html">Personalizar Perfume</a>
         </div>
         <div class="hero-image">
-          <img src="/Perfumes-AMAVI/assets/img/hero-bottle.png" alt="Frasco AMAVI" />
+          <img src="assets/img/hero-bottle.png" alt="Frasco AMAVI" />
         </div>
       </div>
     </section>
@@ -65,40 +60,43 @@
         <p>hola@amavi.com</p>
       </div>
     </div>
-    <p class="center text-muted" style="margin-top:20px;">
-      &copy; 2025 Perfumes AMAVI — Todos los derechos reservados
-    </p>
+    <p class="center text-muted" style="margin-top:20px;">&copy; 2025 Perfumes AMAVI — Todos los derechos reservados</p>
   </footer>
 
-  <!-- 🔸 SCRIPTS -->
-  <script src="/Perfumes-AMAVI/assets/js/app.js"></script>
-  <script>
-    // Mostrar perfumes destacados (3 primeros del arreglo)
-    const grid = document.getElementById("productsGrid");
-    if (typeof perfumes !== "undefined") {
-      grid.innerHTML = perfumes.slice(0, 3).map(p => `
-        <div class="product-card">
-          <img src="/Perfumes-AMAVI/assets/img/imagenperfume1.png${p.image}" alt="${p.name}" />
-          <h3>${p.name}</h3>
-          <p class="text-muted">${p.notes}</p>
-          <a class="btn-secondary" href="/Perfumes-AMAVI/views/product.html?id=${p.id}">Ver más</a>
-        </div>
-      `).join("");
-    } else {
-      grid.innerHTML = "<p class='center text-muted'>No hay productos disponibles.</p>";
-    }
+  <script src="assets/js/app.js"></script>
 
-    // 🔹 Actualizar contador del carrito en el header
-    document.addEventListener("DOMContentLoaded", () => {
-      const countEl = document.getElementById("cartCount");
-      if (!countEl) return;
-      const cart = JSON.parse(localStorage.getItem("amavi_cart") || "[]");
-      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-      countEl.textContent = totalItems;
+  <script type="module">
+    import { auth } from "./assets/js/firebase.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+    const userInfo = document.getElementById("user-info");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const name = user.displayName || "Usuario";
+        const photo = user.photoURL || "assets/img/user.png";
+
+        userInfo.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <span>${name}</span>
+            <button id="logoutBtn" class="btn-ghost">Salir</button>
+          </div>
+        `;
+
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+          await signOut(auth);
+          alert("👋 Sesión cerrada");
+          window.location.reload();
+        });
+      } else {
+        userInfo.innerHTML = `<a href="views/login.html" class="btn-primary">Ingresar</a>`;
+      }
     });
   </script>
 </body>
 </html>
+
 
 
 
