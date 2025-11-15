@@ -1,19 +1,24 @@
+// assets/js/firebase.js
 // Importar SDKs de Firebase versión 12.6.0
-import { 
-  initializeApp 
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 
-import { 
+import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
-  signOut
+  sendEmailVerification,
+  signOut,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-// Configuración de tu proyecto (la que Firebase te dio)
+import {
+  getFirestore
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+// Tu configuración (la que te dio Firebase)
 const firebaseConfig = {
   apiKey: "AIzaSyBR7Z2LoBCphMZaE2UYdeqZZ-VWSWfdKvA",
   authDomain: "amavi-d04ab.firebaseapp.com",
@@ -25,43 +30,80 @@ const firebaseConfig = {
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
+
+// Auth y Firestore exportados
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 // -----------------------------
-// 📌 REGISTRAR USUARIO
+// 📌 REGISTRAR USUARIO (correo + contraseña)
+//    - crea cuenta
+//    - setea displayName
+//    - envía email de verificación
+//    - cierra sesión para que el usuario verifique desde su correo
 // -----------------------------
-export async function registerUser(email, password) {
+export async function registerUser(name, email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    return { ok: true, user: userCredential.user };
+    const user = userCredential.user;
+
+    // Actualizar displayName
+    if (name && name.trim() !== "") {
+      try {
+        await updateProfile(user, { displayName: name });
+      } catch (err) {
+        // no crítico; sigue adelante
+        console.warn("No se pudo actualizar displayName:", err);
+      }
+    }
+
+    // Enviar correo de verificación
+    await sendEmailVerification(user);
+
+    // Cerrar sesión para evitar sesiones de cuentas no verificadas
+    await signOut(auth);
+
+    return { ok: true };
   } catch (error) {
-    return { ok: false, error: error.message };
+    // lanzar para que el caller use try/catch
+    throw new Error(error.message || "Error al registrar usuario");
   }
 }
 
 // -----------------------------
-// 📌 INICIAR SESIÓN
+// 📌 INICIAR SESIÓN (correo + contraseña)
+//    - Solo permite si emailVerified === true
 // -----------------------------
 export async function loginUser(email, password) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return { ok: true, user: userCredential.user };
+    const user = userCredential.user;
+
+    if (!user.emailVerified) {
+      // Cerrar sesión y avisar
+      await signOut(auth);
+      throw new Error("Debes verificar tu correo antes de iniciar sesión. Revisa tu bandeja y confirma el enlace.");
+    }
+
+    return { ok: true, user };
   } catch (error) {
-    return { ok: false, error: error.message };
+    throw new Error(error.message || "Error al iniciar sesión");
   }
 }
 
 // -----------------------------
-// 📌 GOOGLE SIGN-IN
+// 📌 LOGIN CON GOOGLE (solo login — no registro por Google separado)
+//    - Google cuenta como verificado
 // -----------------------------
 const googleProvider = new GoogleAuthProvider();
 
 export async function loginWithGoogle() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
+    // result.user es un usuario verificado por Google
     return { ok: true, user: result.user };
   } catch (error) {
-    return { ok: false, error: error.message };
+    throw new Error(error.message || "Error al iniciar sesión con Google");
   }
 }
 
@@ -73,7 +115,7 @@ export async function recoverPassword(email) {
     await sendPasswordResetEmail(auth, email);
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: error.message };
+    throw new Error(error.message || "Error al solicitar recuperación de contraseña");
   }
 }
 
@@ -85,9 +127,10 @@ export async function logoutUser() {
     await signOut(auth);
     return { ok: true };
   } catch (error) {
-    return { ok: false, error: error.message };
+    throw new Error(error.message || "Error al cerrar sesión");
   }
 }
+
 
 
 
