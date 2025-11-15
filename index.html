@@ -69,16 +69,16 @@
 
   <!-- 🔹 Firebase y autenticación -->
   <script type="module">
-    import { auth } from "./assets/js/firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+    import { auth, logoutUser } from "./assets/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
     const authSection = document.getElementById('auth-section');
 
-    // Detectar si hay usuario activo
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "assets/img/default-user.png";
+
         authSection.innerHTML = `
           <div class="user-info">
             <img src="${photo}" alt="Foto" class="user-photo" />
@@ -87,12 +87,16 @@
           </div>
         `;
 
-        // Cerrar sesión
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada.");
-          window.location.reload();
+          try {
+            await logoutUser();
+            alert("👋 Sesión cerrada.");
+            window.location.reload();
+          } catch (err) {
+            alert("Error al cerrar sesión: " + (err.message || err));
+          }
         });
+
       } else {
         authSection.innerHTML = `<a href="views/login.html" class="btn-primary">Ingresar</a>`;
       }
@@ -116,6 +120,7 @@
 
 </body>
 </html>
+
 
 
 
