@@ -1,19 +1,23 @@
-// Inicialización de Firebase para AMAVI
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+// Importar Firebase desde CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
+// Configuración de tu proyecto Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyB18GxR5Yc_gkpomNWyrKcx4NNNorcsiic",
-  authDomain: "amavi-c8278.firebaseapp.com",
-  projectId: "amavi-c8278",
-  storageBucket: "amavi-c8278.firebasestorage.app",
-  messagingSenderId: "1001997166005",
-  appId: "1:1001997166005:web:cbc2db2fdd3408a60825fc"
+  apiKey: "AIzaSyBR7Z2LoBCphMZaE2UYdeqZZ-VWSWfdKvA",
+  authDomain: "amavi-d04ab.firebaseapp.com",
+  projectId: "amavi-d04ab",
+  storageBucket: "amavi-d04ab.firebasestorage.app",
+  messagingSenderId: "491388565048",
+  appId: "1:491388565048:web:4d6a7211db76cf97fc58cd"
 };
 
-// Inicializa Firebase
-export const app = initializeApp(firebaseConfig);
+// Inicializar la app
+const app = initializeApp(firebaseConfig);
 
-// Inicializa la autenticación
+// Inicializar autenticación
 export const auth = getAuth(app);
+
+// Proveedor de Google
+export const provider = new GoogleAuthProvider();
 
