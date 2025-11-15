@@ -1,3 +1,4 @@
+<!-- views/login.html -->
 <!doctype html>
 <html lang="es">
 <head>
@@ -7,7 +8,7 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-  <!-- 🔹 NAVBAR -->
+  <!-- NAVBAR -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
@@ -25,7 +26,7 @@
     </div>
   </header>
 
-  <!-- 🔹 FORMULARIO DE LOGIN -->
+  <!-- FORMULARIO DE LOGIN -->
   <main class="center" style="padding:80px 0">
     <div style="max-width:420px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:28px;border-radius:12px;">
       <h2 class="center">Ingresar</h2>
@@ -53,63 +54,55 @@
     </div>
   </main>
 
-  <!-- 🔹 SCRIPTS DE FIREBASE -->
+  <!-- SCRIPTS DE FIREBASE -->
   <script type="module">
-    import {
-      auth,
-      loginUser,
-      loginWithGoogle,
-      recoverPassword
-    } from "../assets/js/firebase.js";
+    import { loginUser, loginWithGoogle, recoverPassword } from "../assets/js/firebase.js";
 
     const form = document.getElementById("loginForm");
     const googleBtn = document.getElementById("googleLogin");
     const forgotLink = document.getElementById("forgotLink");
 
-    // 🔸 Iniciar sesión con correo
-    form.addEventListener("submit", async e => {
+    // LOGIN con correo y contraseña
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = form.email.value.trim();
       const password = form.password.value.trim();
 
       try {
         await loginUser(email, password);
-        alert("✅ Sesión iniciada correctamente");
+        // si no lanza error, ya está verificado y puede entrar
         window.location.href = "../index.html";
       } catch (err) {
-        alert("❌ Error: " + err.message);
+        alert("❌ " + (err.message || err));
       }
     });
 
-    // 🔸 Iniciar sesión con Google
+    // LOGIN con Google (popup)
     googleBtn.addEventListener("click", async () => {
       try {
         await loginWithGoogle();
-        alert("✅ Sesión iniciada con Google");
         window.location.href = "../index.html";
       } catch (err) {
-        alert("❌ Error: " + err.message);
+        alert("❌ " + (err.message || err));
       }
     });
 
-    // 🔸 Recuperar contraseña
-    forgotLink.addEventListener("click", async e => {
+    // Recuperar contraseña
+    forgotLink.addEventListener("click", async (e) => {
       e.preventDefault();
       const email = prompt("Ingresa tu correo para restablecer la contraseña:");
-      if (email) {
-        try {
-          await recoverPassword(email);
-          alert("📩 Se ha enviado un enlace a tu correo para restablecer la contraseña.");
-        } catch (err) {
-          alert("❌ Error: " + err.message);
-        }
+      if (!email) return;
+      try {
+        await recoverPassword(email);
+        alert("📩 Se ha enviado un enlace a tu correo para restablecer la contraseña.");
+      } catch (err) {
+        alert("❌ " + (err.message || err));
       }
     });
   </script>
 </body>
 </html>
 
-</html>
 
 
 
