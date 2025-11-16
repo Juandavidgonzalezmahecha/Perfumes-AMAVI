@@ -7,29 +7,29 @@
   <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
+
 <body>
-  <!-- 🔸 CABECERA -->
+
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
-        <ul>
+        <ul id="nav-links">
           <li><a href="../index.html">Inicio</a></li>
           <li><a href="products.html">Catálogo</a></li>
           <li><a href="personalizar.html">Personalizar</a></li>
           <li><a href="cart.html" class="active">🛒 <span id="cart-count">0</span></a></li>
-          <li id="user-info"></li>
+          <li id="auth-section"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO -->
   <main class="wrap" style="padding:80px 0;">
     <h2 class="center">Tu carrito de compras</h2>
-    <p class="center text-muted">Revisa tus productos antes de continuar con la compra.</p>
+    <p class="center text-muted">Revisa tus productos antes de continuar.</p>
 
-    <div id="cartContainer" style="margin-top:40px;"></div>
+    <div id="cartContainer"></div>
 
     <div class="center" style="margin-top:40px;">
       <button id="clearCart" class="btn-ghost">Vaciar carrito</button>
@@ -49,64 +49,67 @@
     </div>
   </footer>
 
-  <script src="../assets/js/app.js"></script>
-
   <script type="module">
-    import { auth } from "../assets/js/firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { auth, logoutUser } from "../assets/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getCart, saveCart } from "../assets/js/app.js";
 
-    const userInfo = document.getElementById("user-info");
+    const authSection = document.getElementById("auth-section");
+    const cartContainer = document.getElementById("cartContainer");
+    const clearBtn = document.getElementById("clearCart");
 
+    // 🔹 LOGIN
     onAuthStateChanged(auth, user => {
       if (user) {
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "../assets/img/user.png";
 
-        userInfo.innerHTML = `
+        authSection.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <img src="${photo}" class="user-photo">
             <span>${name}</span>
             <button id="logoutBtn" class="btn-ghost">Salir</button>
           </div>
         `;
+
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada");
+          await logoutUser();
           window.location.href = "../index.html";
         });
       } else {
-        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+        authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
     });
 
-    // 🔹 Lógica del carrito
-    const container = document.getElementById("cartContainer");
-    const clearBtn = document.getElementById("clearCart");
-
+    // 🔹 Render carrito
     function renderCart() {
       const cart = getCart();
+
       if (cart.length === 0) {
-        container.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
+        cartContainer.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
         return;
       }
 
       let total = 0;
-      container.innerHTML = `
+
+      cartContainer.innerHTML = `
         <div class="products-grid">
           ${cart.map(item => {
             total += item.price * item.qty;
             return `
               <div class="card center">
-                <img src="../assets/img/${item.image || 'imagenperfume1.png'}" alt="${item.name}" />
+                <img src="${item.image}" alt="${item.name}">
                 <h3>${item.name}</h3>
                 <p>Cantidad: ${item.qty}</p>
                 <p>Precio: $${item.price.toLocaleString()}</p>
                 <p>Subtotal: $${(item.price * item.qty).toLocaleString()}</p>
-                <button class="btn-ghost" onclick="removeItem(${item.id})">Eliminar</button>
+
+                <button class="btn-ghost" onclick="removeItem('${item.id}')">Eliminar</button>
               </div>
             `;
-          }).join("")}
+            }).join("")}
         </div>
+
         <div class="center" style="margin-top:30px;">
           <h3>Total: $${total.toLocaleString()}</h3>
           <button class="btn-primary" onclick="finalizarCompra()">Finalizar compra</button>
@@ -115,14 +118,13 @@
     }
 
     window.removeItem = id => {
-      let cart = getCart();
-      cart = cart.filter(item => item.id !== id);
+      let cart = getCart().filter(i => i.id != id);
       saveCart(cart);
       renderCart();
     };
 
     window.finalizarCompra = () => {
-      alert("🎉 ¡Compra realizada exitosamente!");
+      alert("🎉 Compra realizada con éxito.");
       saveCart([]);
       renderCart();
     };
@@ -134,8 +136,10 @@
 
     document.addEventListener("DOMContentLoaded", renderCart);
   </script>
+
 </body>
 </html>
+
 
 
 
