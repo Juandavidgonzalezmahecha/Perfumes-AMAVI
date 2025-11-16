@@ -6,9 +6,23 @@
   <title>Panel del Administrador - AMAVI</title>
   <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
   <link href="../assets/css/style.css" rel="stylesheet" />
+  <style>
+    /* Pequeños ajustes locales para el panel */
+    .admin-grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
+    .admin-panel { background: var(--bg-2); padding: 18px; border-radius: 12px; }
+    .small { font-size: 13px; color: var(--muted); }
+    .status-badge { padding:6px 10px; border-radius:8px; font-weight:600; }
+    .status-pendiente { background:#F3C969; color:#081010; }
+    .status-preparando { background:#CDE5A3; color:#081010; }
+    .status-enviado { background:#9FD3FF; color:#081010; }
+    .status-entregado { background:#B9F5D0; color:#081010; }
+    .product-thumb { width:100%; max-height:160px; object-fit:cover; border-radius:8px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .muted { color:var(--muted); font-size:13px; }
+  </style>
 </head>
 <body>
-  <!-- 🔸 NAVBAR -->
+  <!-- NAVBAR -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
@@ -25,50 +39,82 @@
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO -->
-  <main class="wrap" style="padding:80px 0;">
+  <!-- CONTENIDO -->
+  <main class="wrap" style="padding:32px 0;">
     <h2 class="center">Panel del Administrador</h2>
-    <p class="center text-muted">Gestiona, edita y busca productos fácilmente.</p>
+    <p class="center text-muted">Gestiona productos, inventario, pedidos y usuarios.</p>
 
-    <!-- 🟢 FORMULARIO NUEVO PRODUCTO -->
-    <section class="form-card" style="max-width:600px;margin:40px auto;">
-      <h3>Agregar nuevo perfume</h3>
-      <form id="addProductForm">
-        <label>Nombre</label>
-        <input name="name" required />
-        <label>Descripción</label>
-        <input name="notes" required />
-        <label>Tipo (dulce, fresco, amaderado...)</label>
-        <input name="type" required />
-        <label>Precio</label>
-        <input type="number" name="price" step="0.01" required />
-        <label>Nombre de imagen (ej: p1.png)</label>
-        <input name="image" required />
-        <div class="center" style="margin-top:16px;">
-          <button type="submit" class="btn-primary">Agregar producto</button>
-        </div>
-      </form>
-    </section>
+    <div class="admin-grid" style="margin-top:24px;">
+      <!-- LEFT: Productos y Pedidos -->
+      <div>
+        <!-- A) FORMULARIO CREAR PRODUCTO -->
+        <section class="admin-panel">
+          <h3>Agregar / Editar producto</h3>
+          <form id="productForm">
+            <input type="hidden" id="editId" />
+            <label>Nombre</label>
+            <input id="p-name" required />
+            <label>Descripción</label>
+            <input id="p-notes" required />
+            <label>Tipo (dulce, fresco, amaderado...)</label>
+            <input id="p-type" required />
+            <label>Precio (ej: 5000)</label>
+            <input id="p-price" type="number" step="0.01" required />
+            <label>URL imagen (http...)</label>
+            <input id="p-image" placeholder="https://..." required />
+            <label>Stock (JSON por tamaño, ej: { "grande":10, "mediano":5, "pequeño":2 })</label>
+            <input id="p-stock" placeholder='{"grande":10,"mediano":5,"pequeño":2}' />
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="btn-primary" id="saveProductBtn" type="submit">Guardar producto</button>
+              <button class="btn-ghost" id="resetFormBtn" type="button">Limpiar</button>
+            </div>
+            <p class="small" style="margin-top:10px;">Nota: Deja la URL de la imagen si quieres usar una imagen externa. Si subes a Storage luego puedes actualizar la URL aquí.</p>
+          </form>
+        </section>
 
-    <!-- 🔍 BUSCADOR Y FILTRO -->
-    <section class="filters" style="max-width:600px;margin:0 auto 40px;text-align:center;">
-      <input id="searchInput" placeholder="Buscar por nombre..." style="padding:10px;width:60%;border-radius:8px;border:none;">
-      <select id="typeFilter" style="padding:10px;border-radius:8px;margin-left:10px;">
-        <option value="all">Todos los tipos</option>
-        <option value="dulce">Dulce</option>
-        <option value="fresco">Fresco</option>
-        <option value="amaderado">Amaderado</option>
-      </select>
-    </section>
+        <!-- B) BUSCADOR -->
+        <section class="admin-panel" style="margin-top:18px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="searchAdmin" placeholder="Buscar productos..." style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);" />
+            <select id="filterType" style="padding:8px;border-radius:8px;">
+              <option value="all">Todos</option>
+              <option value="dulce">Dulce</option>
+              <option value="fresco">Fresco</option>
+              <option value="amaderado">Amaderado</option>
+            </select>
+          </div>
 
-    <!-- 🟣 LISTA DE PRODUCTOS -->
-    <section style="margin-top:30px;">
-      <h3 class="center">Productos actuales</h3>
-      <div id="adminProducts" class="products-grid" style="margin-top:30px;"></div>
-    </section>
+          <!-- Lista de productos -->
+          <div id="productsList" style="margin-top:16px;" class="row"></div>
+        </section>
+
+        <!-- C) PEDIDOS -->
+        <section class="admin-panel" style="margin-top:18px;">
+          <h3>Pedidos recientes</h3>
+          <div id="ordersList" style="margin-top:12px;"></div>
+        </section>
+      </div>
+
+      <!-- RIGHT: Panel rápido / métricas -->
+      <aside>
+        <section class="admin-panel">
+          <h3>Panel rápido</h3>
+          <p class="muted">Usuario actual: <strong id="adminName">—</strong></p>
+          <p class="muted">Email: <strong id="adminEmail">—</strong></p>
+          <p style="margin-top:8px;">
+            <button id="refreshBtn" class="btn-secondary">Refrescar datos</button>
+            <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
+          </p>
+          <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+          <h4>Estadísticas</h4>
+          <p class="small">Productos: <strong id="statProducts">0</strong></p>
+          <p class="small">Pedidos totales: <strong id="statOrders">0</strong></p>
+          <p class="small">Ventas estimadas: <strong id="statRevenue">$0</strong></p>
+        </section>
+      </aside>
+    </div>
   </main>
 
-  <!-- 🔸 FOOTER -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -83,156 +129,8 @@
   </footer>
 
   <script src="../assets/js/app.js"></script>
-
-  <!-- 🔸 FIREBASE ADMIN -->
-  <script type="module">
-    import { auth, db } from "../assets/js/firebase.js";
-    import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import {
-      collection,
-      addDoc,
-      getDocs,
-      deleteDoc,
-      doc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-    const userInfo = document.getElementById("user-info");
-    const form = document.getElementById("addProductForm");
-    const adminGrid = document.getElementById("adminProducts");
-    const searchInput = document.getElementById("searchInput");
-    const typeFilter = document.getElementById("typeFilter");
-    const perfumesRef = collection(db, "perfumes");
-
-    // 🔹 Mostrar usuario autenticado
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        const name = user.displayName || "Admin";
-        const photo = user.photoURL || "../assets/img/user.png";
-
-        userInfo.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
-            <span>${name}</span>
-            <button id="logoutBtn" class="btn-ghost">Salir</button>
-          </div>
-        `;
-        document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada");
-          window.location.href = "../index.html";
-        });
-      } else {
-        alert("⚠️ Debes iniciar sesión como administrador");
-        window.location.href = "login.html";
-      }
-    });
-
-    // 🟢 Renderizar productos desde Firestore
-    async function renderAdminProducts() {
-      const querySnapshot = await getDocs(perfumesRef);
-      let list = [];
-      querySnapshot.forEach(docSnap => {
-        list.push({ id: docSnap.id, ...docSnap.data() });
-      });
-
-      const searchTerm = searchInput.value.toLowerCase();
-      const selectedType = typeFilter.value;
-
-      const filtered = list.filter(p => {
-        const matchName = p.name.toLowerCase().includes(searchTerm);
-        const matchType = selectedType === "all" || p.type.toLowerCase() === selectedType;
-        return matchName && matchType;
-      });
-
-      adminGrid.innerHTML = filtered.length
-        ? filtered.map(p => `
-          <div class="product-card">
-            <img src="../assets/img/${p.image}" alt="${p.name}" />
-            <h3>${p.name}</h3>
-            <p>${p.notes}</p>
-            <small class="text-muted">${p.type}</small>
-            <p class="price">$${p.price}</p>
-            <div style="margin-top:10px;display:flex;gap:6px;justify-content:center;">
-              <button class="btn-ghost" onclick="editProduct('${p.id}','${p.name}','${p.notes}','${p.type}',${p.price},'${p.image}')">Editar</button>
-              <button class="btn-ghost" onclick="deleteProduct('${p.id}')">Eliminar</button>
-            </div>
-          </div>
-        `).join("")
-        : "<p class='center text-muted'>No se encontraron productos.</p>";
-    }
-
-    // ➕ Agregar producto
-    form.addEventListener("submit", async e => {
-      e.preventDefault();
-      const data = {
-        name: form.name.value,
-        notes: form.notes.value,
-        type: form.type.value,
-        price: parseFloat(form.price.value),
-        image: form.image.value
-      };
-      await addDoc(perfumesRef, data);
-      form.reset();
-      alert("✅ Producto agregado correctamente");
-      renderAdminProducts();
-    });
-
-    // ❌ Eliminar producto
-    window.deleteProduct = async id => {
-      await deleteDoc(doc(db, "perfumes", id));
-      alert("🗑️ Producto eliminado");
-      renderAdminProducts();
-    };
-
-    // ✏️ Editar producto
-    window.editProduct = (id, name, notes, type, price, image) => {
-      const card = document.getElementById(`edit-${id}`);
-      adminGrid.innerHTML = `
-        <div class="form-card" style="max-width:400px;margin:auto;">
-          <h3>Editar Perfume</h3>
-          <label>Nombre</label>
-          <input id="edit-name" value="${name}">
-          <label>Descripción</label>
-          <input id="edit-notes" value="${notes}">
-          <label>Tipo</label>
-          <input id="edit-type" value="${type}">
-          <label>Precio</label>
-          <input id="edit-price" type="number" step="0.01" value="${price}">
-          <label>Imagen</label>
-          <input id="edit-image" value="${image}">
-          <div class="center" style="margin-top:10px;">
-            <button class="btn-primary" onclick="saveEdit('${id}')">Guardar</button>
-            <button class="btn-ghost" onclick="renderAdminProducts()">Cancelar</button>
-          </div>
-        </div>
-      `;
-    };
-
-    // 💾 Guardar cambios
-    window.saveEdit = async id => {
-      const updated = {
-        name: document.getElementById("edit-name").value,
-        notes: document.getElementById("edit-notes").value,
-        type: document.getElementById("edit-type").value,
-        price: parseFloat(document.getElementById("edit-price").value),
-        image: document.getElementById("edit-image").value
-      };
-      await updateDoc(doc(db, "perfumes", id), updated);
-      alert("✅ Cambios guardados correctamente");
-      renderAdminProducts();
-    };
-
-    // Filtros
-    searchInput.addEventListener("input", renderAdminProducts);
-    typeFilter.addEventListener("change", renderAdminProducts);
-
-    // Cargar al inicio
-    document.addEventListener("DOMContentLoaded", renderAdminProducts);
-  </script>
+  <!-- Admin logic -->
+  <script type="module" src="../assets/js/admin.js"></script>
 </body>
 </html>
 
