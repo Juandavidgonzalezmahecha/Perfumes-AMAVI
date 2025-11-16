@@ -1,5 +1,5 @@
 // assets/js/firebase.js
-// Importar SDKs de Firebase versión 12.6.0
+// SDK Firebase 12.6
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 
 import {
@@ -15,10 +15,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 import {
-  getFirestore
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+  getDatabase,
+  ref,
+  set,
+  get,
+  child
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-// Tu configuración (la que te dio Firebase)
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyBR7Z2LoBCphMZaE2UYdeqZZ-VWSWfdKvA",
   authDomain: "amavi-d04ab.firebaseapp.com",
@@ -28,108 +32,105 @@ const firebaseConfig = {
   appId: "1:491388565048:web:4d6a7211db76cf97fc58cd"
 };
 
-// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Auth y Firestore exportados
+// EXPORTS
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getDatabase(app);
 
 // -----------------------------
-// 📌 REGISTRAR USUARIO (correo + contraseña)
-//    - crea cuenta
-//    - setea displayName
-//    - envía email de verificación
-//    - cierra sesión para que el usuario verifique desde su correo
+// LISTA DE ADMINS (por correo)
+// -----------------------------
+const ADMINS = [
+  "est.juand.gonzalezm@unimilitar.edu.co",
+  "Cristianj244488@gmail.com"
+];
+
+// -----------------------------
+// 📌 Identificar si un usuario es admin
+// -----------------------------
+export async function isAdmin(uid) {
+  const dbRef = ref(db);
+
+  const roleSnap = await get(child(dbRef, `roles/${uid}`));
+  const role = roleSnap.exists() ? roleSnap.val() : null;
+
+  return role === "admin";
+}
+
+// -----------------------------
+// 📌 Asignar rol admin automáticamente
+// -----------------------------
+async function assignAdminRoleIfNeeded(user) {
+  if (!user) return;
+
+  if (ADMINS.includes(user.email)) {
+    await set(ref(db, `roles/${user.uid}`), "admin");
+  }
+}
+
+// -----------------------------
+// 📌 REGISTRAR USUARIO
 // -----------------------------
 export async function registerUser(name, email, password) {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
 
-    // Actualizar displayName
-    if (name && name.trim() !== "") {
-      try {
-        await updateProfile(user, { displayName: name });
-      } catch (err) {
-        // no crítico; sigue adelante
-        console.warn("No se pudo actualizar displayName:", err);
-      }
-    }
+  if (name) await updateProfile(user, { displayName: name });
 
-    // Enviar correo de verificación
-    await sendEmailVerification(user);
+  await sendEmailVerification(user);
+  await signOut(auth);
 
-    // Cerrar sesión para evitar sesiones de cuentas no verificadas
-    await signOut(auth);
-
-    return { ok: true };
-  } catch (error) {
-    // lanzar para que el caller use try/catch
-    throw new Error(error.message || "Error al registrar usuario");
-  }
+  return { ok: true };
 }
 
 // -----------------------------
-// 📌 INICIAR SESIÓN (correo + contraseña)
-//    - Solo permite si emailVerified === true
+// 📌 LOGIN
 // -----------------------------
 export async function loginUser(email, password) {
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
 
-    if (!user.emailVerified) {
-      // Cerrar sesión y avisar
-      await signOut(auth);
-      throw new Error("Debes verificar tu correo antes de iniciar sesión. Revisa tu bandeja y confirma el enlace.");
-    }
-
-    return { ok: true, user };
-  } catch (error) {
-    throw new Error(error.message || "Error al iniciar sesión");
+  if (!user.emailVerified) {
+    await signOut(auth);
+    throw new Error("Debes verificar tu correo antes de iniciar sesión.");
   }
+
+  await assignAdminRoleIfNeeded(user);
+
+  return { ok: true, user };
 }
 
 // -----------------------------
-// 📌 LOGIN CON GOOGLE (solo login — no registro por Google separado)
-//    - Google cuenta como verificado
+// 📌 GOOGLE LOGIN
 // -----------------------------
 const googleProvider = new GoogleAuthProvider();
 
 export async function loginWithGoogle() {
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    // result.user es un usuario verificado por Google
-    return { ok: true, user: result.user };
-  } catch (error) {
-    throw new Error(error.message || "Error al iniciar sesión con Google");
-  }
+  const result = await signInWithPopup(auth, googleProvider);
+  const user = result.user;
+
+  await assignAdminRoleIfNeeded(user);
+
+  return { ok: true, user };
 }
 
 // -----------------------------
 // 📌 RECUPERAR CONTRASEÑA
 // -----------------------------
 export async function recoverPassword(email) {
-  try {
-    await sendPasswordResetEmail(auth, email);
-    return { ok: true };
-  } catch (error) {
-    throw new Error(error.message || "Error al solicitar recuperación de contraseña");
-  }
+  await sendPasswordResetEmail(auth, email);
+  return { ok: true };
 }
 
 // -----------------------------
-// 📌 CERRAR SESIÓN
+// 📌 LOGOUT
 // -----------------------------
 export async function logoutUser() {
-  try {
-    await signOut(auth);
-    return { ok: true };
-  } catch (error) {
-    throw new Error(error.message || "Error al cerrar sesión");
-  }
+  await signOut(auth);
+  return { ok: true };
 }
+
 
 
 
