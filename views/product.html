@@ -7,23 +7,24 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+
   <!-- 🔸 HEADER -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
-        <ul>
+        <ul id="nav-links">
           <li><a href="../index.html">Inicio</a></li>
           <li><a href="products.html">Catálogo</a></li>
           <li><a href="personalizar.html">Personalizar</a></li>
           <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
-          <li id="user-info"></li>
+          <li id="auth-section"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 DETALLE DE PRODUCTO -->
+  <!-- 🔸 DETALLE DEL PRODUCTO -->
   <main class="container" style="padding:60px 0;">
     <div id="productDetail"></div>
   </main>
@@ -41,57 +42,81 @@
     </div>
   </footer>
 
-  <script src="../assets/js/app.js"></script>
-
   <script type="module">
-    import { auth } from "../assets/js/firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { auth, db, logoutUser } from "../assets/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { ref, get } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-    const userInfo = document.getElementById("user-info");
+    import { addToCart } from "../assets/js/app.js";
 
+    const authSection = document.getElementById("auth-section");
+    const detailBox = document.getElementById("productDetail");
+
+    // 🔸 LOGIN SHOW
     onAuthStateChanged(auth, user => {
       if (user) {
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "../assets/img/user.png";
 
-        userInfo.innerHTML = `
+        authSection.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <img src="${photo}" class="user-photo">
             <span>${name}</span>
             <button id="logoutBtn" class="btn-ghost">Salir</button>
           </div>
         `;
 
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada");
+          await logoutUser();
           window.location.href = "../index.html";
         });
+
       } else {
-        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+        authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
     });
 
-    // Mostrar detalle del producto
-    const params = new URLSearchParams(window.location.search);
-    const id = parseInt(params.get("id"));
-    const product = perfumes.find(p => p.id === id);
-    const detail = document.getElementById("productDetail");
+    // 🔸 LEER ID DE LA URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
 
-    if (product) {
-      detail.innerHTML = `
-        <div class="card center" style="max-width:480px;margin:auto;">
-          <img src="../assets/img/${product.image}" alt="${product.name}" />
-          <h2>${product.name}</h2>
-          <p class="text-muted">${product.notes}</p>
-          <p>Precio: <strong>$${product.price.toLocaleString()}</strong></p>
-          <button class="btn-primary" onclick="addToCart(${product.id})">Agregar al carrito</button>
+    if (!productId) {
+      detailBox.innerHTML = "<p class='center text-muted'>Producto no encontrado.</p>";
+    } else {
+      loadProduct(productId);
+    }
+
+    // 🔥 CARGAR DESDE REALTIME DATABASE
+    async function loadProduct(id) {
+      const snap = await get(ref(db, "products/" + id));
+
+      if (!snap.exists()) {
+        detailBox.innerHTML = "<p class='center text-muted'>Producto no encontrado.</p>";
+        return;
+      }
+
+      const p = snap.val();
+
+      detailBox.innerHTML = `
+        <div class="product-detail-card">
+          <img src="${p.image}" alt="${p.name}">
+          <div class="product-info">
+            <h2>${p.name}</h2>
+            <p class="text-muted">${p.notes}</p>
+            <p style="margin-top:10px;font-size:18px;">
+              Precio: <strong>$${Number(p.price).toLocaleString()}</strong>
+            </p>
+
+            <button class="btn-primary"
+              onclick='addToCart(${JSON.stringify({ id, ...p })})'>
+              Agregar al carrito
+            </button>
+          </div>
         </div>
       `;
-    } else {
-      detail.innerHTML = "<p class='center text-muted'>Producto no encontrado</p>";
     }
   </script>
+
 </body>
 </html>
 
