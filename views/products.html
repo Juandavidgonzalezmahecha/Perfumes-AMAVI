@@ -44,6 +44,10 @@
     </div>
   </footer>
 
+  <!-- 🟦 APP GENERAL (carrito) -->
+  <script type="module" src="../assets/js/app.js"></script>
+
+  <!-- 🟧 LÓGICA DE PRODUCTS -->
   <script type="module">
     import { db, auth, logoutUser, isAdmin } from "../assets/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
@@ -54,7 +58,9 @@
     const authSection = document.getElementById("auth-section");
     const grid = document.getElementById("productGrid");
 
-    // 🔹 LOGIN
+    /* -----------------------------------------
+       🔹 CONTROL DE USUARIO Y ADMIN
+    ------------------------------------------*/
     onAuthStateChanged(auth, async user => {
       if (user) {
         const admin = await isAdmin(user.uid);
@@ -80,14 +86,17 @@
       }
     });
 
-    // 🔹 Cargar productos desde Firebase
+    /* -----------------------------------------
+       🔹 CARGAR PRODUCTOS DESDE FIREBASE
+    ------------------------------------------*/
     function loadProducts() {
       const productsRef = ref(db, "products");
+
       onValue(productsRef, (snap) => {
         const data = snap.val() || {};
 
         grid.innerHTML = Object.entries(data)
-          .filter(([, p]) => p.active)
+          .filter(([, p]) => p.active !== false)
           .map(([id, p]) => `
             <div class="card">
               <img src="${p.image}" alt="${p.name}">
@@ -95,7 +104,8 @@
               <p class="text-muted">${p.notes}</p>
               <p class="price">$${Number(p.price).toLocaleString()}</p>
 
-              <button class="btn-primary" onclick='addToCart(${JSON.stringify({ id, ...p })})'>
+              <button class="btn-primary"
+                onclick='addToCart(${JSON.stringify({ id, ...p })})'>
                 Agregar al carrito
               </button>
             </div>
@@ -108,6 +118,7 @@
 
 </body>
 </html>
+
 
 
 
