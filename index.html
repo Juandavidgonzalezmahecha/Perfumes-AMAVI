@@ -19,9 +19,9 @@
           <li><a href="views/products.html">Catálogo</a></li>
           <li><a href="views/personalizar.html">Personalizar</a></li>
           <li><a href="views/cart.html">🛒 <span id="cart-count">0</span></a></li>
-          <li id="auth-section">
-            <a href="views/login.html" class="btn-primary">Ingresar</a>
-          </li>
+
+          <!-- Aquí se inserta login / usuario / admin -->
+          <li id="auth-section"></li>
         </ul>
       </nav>
     </div>
@@ -65,17 +65,18 @@
     <p class="center text-muted" style="margin-top:20px;">&copy; 2025 Perfumes AMAVI — Todos los derechos reservados</p>
   </footer>
 
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/app.js" type="module"></script>
 
   <!-- 🔹 Firebase y autenticación -->
   <script type="module">
-    import { auth, logoutUser } from "./assets/js/firebase.js";
+    import { auth, isAdmin, logoutUser } from "./assets/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
     const authSection = document.getElementById('auth-section');
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const admin = await isAdmin(user.uid);
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "assets/img/default-user.png";
 
@@ -83,18 +84,14 @@
           <div class="user-info">
             <img src="${photo}" alt="Foto" class="user-photo" />
             <span>${name}</span>
+            ${admin ? `<a href="views/admin.html" class="btn-ghost">Administrar</a>` : ""}
             <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
           </div>
         `;
 
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          try {
-            await logoutUser();
-            alert("👋 Sesión cerrada.");
-            window.location.reload();
-          } catch (err) {
-            alert("Error al cerrar sesión: " + (err.message || err));
-          }
+          await logoutUser();
+          window.location.reload();
         });
 
       } else {
@@ -120,6 +117,7 @@
 
 </body>
 </html>
+
 
 
 
