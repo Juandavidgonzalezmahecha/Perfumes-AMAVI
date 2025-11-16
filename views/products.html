@@ -7,26 +7,27 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
+
   <!-- 🔸 HEADER -->
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
-        <ul>
+        <ul id="nav-links">
           <li><a href="../index.html">Inicio</a></li>
           <li><a href="products.html" class="active">Catálogo</a></li>
           <li><a href="personalizar.html">Personalizar</a></li>
           <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
-          <li id="user-info"></li>
+          <li id="auth-section"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 CONTENIDO PRINCIPAL -->
   <main class="container" style="padding:60px 0;">
     <h2 class="center">Catálogo de Perfumes</h2>
-    <p class="center text-muted">Explora nuestras fragancias exclusivas para cada estilo</p>
+    <p class="center text-muted">Explora nuestras fragancias exclusivas</p>
+
     <div id="productGrid" class="products-grid" style="margin-top:40px;"></div>
   </main>
 
@@ -43,55 +44,71 @@
     </div>
   </footer>
 
-  <script src="../assets/js/app.js"></script>
-
   <script type="module">
-    import { auth } from "../assets/js/firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { db, auth, logoutUser, isAdmin } from "../assets/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-    const userInfo = document.getElementById("user-info");
+    import { addToCart } from "../assets/js/app.js";
 
-    onAuthStateChanged(auth, user => {
+    const authSection = document.getElementById("auth-section");
+    const grid = document.getElementById("productGrid");
+
+    // 🔹 LOGIN
+    onAuthStateChanged(auth, async user => {
       if (user) {
+        const admin = await isAdmin(user.uid);
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "../assets/img/user.png";
 
-        userInfo.innerHTML = `
+        authSection.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <img src="${photo}" alt="foto" class="user-photo">
             <span>${name}</span>
+            ${admin ? `<a href="admin.html" class="btn-ghost">Administrar</a>` : ""}
             <button id="logoutBtn" class="btn-ghost">Salir</button>
           </div>
         `;
 
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada");
+          await logoutUser();
           window.location.href = "../index.html";
         });
+
       } else {
-        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+        authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
     });
 
-    // Mostrar productos
-    const grid = document.getElementById("productGrid");
-    if (typeof perfumes !== "undefined") {
-      grid.innerHTML = perfumes.map(p => `
-        <div class="card">
-          <img src="../assets/img/${p.image}" alt="${p.name}" />
-          <h3>${p.name}</h3>
-          <p class="text-muted">${p.notes}</p>
-          <p class="price">$${p.price.toLocaleString()}</p>
-          <button class="btn-primary" onclick="location.href='product.html?id=${p.id}'">Ver más</button>
-        </div>
-      `).join("");
-    } else {
-      grid.innerHTML = "<p class='center text-muted'>No hay productos disponibles.</p>";
+    // 🔹 Cargar productos desde Firebase
+    function loadProducts() {
+      const productsRef = ref(db, "products");
+      onValue(productsRef, (snap) => {
+        const data = snap.val() || {};
+
+        grid.innerHTML = Object.entries(data)
+          .filter(([, p]) => p.active)
+          .map(([id, p]) => `
+            <div class="card">
+              <img src="${p.image}" alt="${p.name}">
+              <h3>${p.name}</h3>
+              <p class="text-muted">${p.notes}</p>
+              <p class="price">$${Number(p.price).toLocaleString()}</p>
+
+              <button class="btn-primary" onclick='addToCart(${JSON.stringify({ id, ...p })})'>
+                Agregar al carrito
+              </button>
+            </div>
+          `).join("");
+      });
     }
+
+    loadProducts();
   </script>
+
 </body>
 </html>
+
 
 
 
