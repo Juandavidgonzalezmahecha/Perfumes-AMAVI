@@ -49,17 +49,25 @@
     </div>
   </footer>
 
+  <!-- 🔹 SCRIPT CARRITO + FIREBASE -->
   <script type="module">
-    import { auth, logoutUser } from "../assets/js/firebase.js";
+    import { auth, logoutUser, db } from "../assets/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { getCart, saveCart } from "../assets/js/app.js";
+    import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
     const authSection = document.getElementById("auth-section");
     const cartContainer = document.getElementById("cartContainer");
     const clearBtn = document.getElementById("clearCart");
 
-    // 🔹 LOGIN
+    let currentUser = null;
+
+    /* -----------------------------------------
+        🔹 CONTROL LOGIN
+    ------------------------------------------*/
     onAuthStateChanged(auth, user => {
+      currentUser = user;
+
       if (user) {
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "../assets/img/user.png";
@@ -76,12 +84,16 @@
           await logoutUser();
           window.location.href = "../index.html";
         });
+
       } else {
         authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
     });
 
-    // 🔹 Render carrito
+
+    /* -----------------------------------------
+        🔹 RENDER CARRITO
+    ------------------------------------------*/
     function renderCart() {
       const cart = getCart();
 
@@ -107,7 +119,7 @@
                 <button class="btn-ghost" onclick="removeItem('${item.id}')">Eliminar</button>
               </div>
             `;
-            }).join("")}
+          }).join("")}
         </div>
 
         <div class="center" style="margin-top:30px;">
@@ -117,18 +129,68 @@
       `;
     }
 
+
+    /* -----------------------------------------
+        🔹 ELIMINAR PRODUCTO
+    ------------------------------------------*/
     window.removeItem = id => {
       let cart = getCart().filter(i => i.id != id);
       saveCart(cart);
       renderCart();
     };
 
-    window.finalizarCompra = () => {
-      alert("🎉 Compra realizada con éxito.");
+
+    /* -----------------------------------------
+        🔹 FINALIZAR COMPRA (GUARDAR EN FIREBASE)
+    ------------------------------------------*/
+    window.finalizarCompra = async () => {
+      const cart = getCart();
+
+      if (cart.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+      }
+
+      if (!currentUser) {
+        alert("Debes iniciar sesión para realizar la compra.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+      const orderRef = push(ref(db, "orders"));
+
+      const orderData = {
+        userId: currentUser.uid,
+        customerName: currentUser.displayName || "Cliente",
+        email: currentUser.email,
+        createdAt: Date.now(),
+        status: "pendiente",
+        total: total,
+        items: {},
+      };
+
+      cart.forEach(item => {
+        orderData.items[item.id] = {
+          name: item.name,
+          price: item.price,
+          qty: item.qty,
+          image: item.image
+        };
+      });
+
+      await set(orderRef, orderData);
+
+      alert("🎉 Tu pedido fue registrado con éxito.");
       saveCart([]);
       renderCart();
     };
 
+
+    /* -----------------------------------------
+        🔹 VACIAR CARRITO
+    ------------------------------------------*/
     clearBtn.addEventListener("click", () => {
       saveCart([]);
       renderCart();
@@ -139,7 +201,3 @@
 
 </body>
 </html>
-
-
-
-
