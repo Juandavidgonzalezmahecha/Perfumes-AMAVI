@@ -8,26 +8,25 @@
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
 <body>
-  <!-- 🔸 CABECERA -->
+
   <header class="site-header">
     <div class="wrap">
       <a class="brand" href="../index.html">AMAVI</a>
       <nav class="main-nav">
-        <ul>
+        <ul id="nav-links">
           <li><a href="../index.html">Inicio</a></li>
           <li><a href="products.html">Catálogo</a></li>
           <li><a href="personalizar.html" class="active">Personalizar</a></li>
           <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
-          <li id="user-info"></li>
+          <li id="auth-section"></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- 🔸 SECCIÓN DE PERSONALIZACIÓN -->
   <main class="wrap" style="padding:60px 0;">
     <h2 class="center">Crea tu perfume ideal</h2>
-    <p class="center text-muted">Responde algunas preguntas y descubre la fragancia perfecta para ti.</p>
+    <p class="center text-muted">Responde algunas preguntas y encuentra tu aroma perfecto.</p>
 
     <form id="quizForm" class="form-card" style="max-width:600px;margin:40px auto;">
       <label>1️⃣ ¿Prefieres aromas dulces o frescos?</label>
@@ -46,9 +45,9 @@
 
       <label>3️⃣ ¿Qué tipo de duración prefieres?</label>
       <select name="duracion">
-        <option value="suave">Suave (4h)</option>
-        <option value="media">Media (6h)</option>
-        <option value="intensa">Intensa (8h+)</option>
+        <option value="suave">Suave</option>
+        <option value="media">Media</option>
+        <option value="intensa">Intensa</option>
       </select>
 
       <div class="center" style="margin-top:20px;">
@@ -59,7 +58,6 @@
     <div id="resultado" class="center" style="margin-top:40px;"></div>
   </main>
 
-  <!-- 🔸 PIE DE PÁGINA -->
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
@@ -73,61 +71,60 @@
     </div>
   </footer>
 
-  <script src="../assets/js/app.js"></script>
-
   <script type="module">
-    import { auth } from "../assets/js/firebase.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { auth, logoutUser } from "../assets/js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-    const userInfo = document.getElementById("user-info");
+    const authSection = document.getElementById("auth-section");
 
     onAuthStateChanged(auth, user => {
       if (user) {
         const name = user.displayName || "Usuario";
         const photo = user.photoURL || "../assets/img/user.png";
 
-        userInfo.innerHTML = `
+        authSection.innerHTML = `
           <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" alt="Foto de perfil" style="width:32px;height:32px;border-radius:50%;">
+            <img src="${photo}" class="user-photo">
             <span>${name}</span>
             <button id="logoutBtn" class="btn-ghost">Salir</button>
           </div>
         `;
+
         document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await signOut(auth);
-          alert("👋 Sesión cerrada");
+          await logoutUser();
           window.location.href = "../index.html";
         });
       } else {
-        userInfo.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+        authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
     });
 
-    // 🔹 Lógica del formulario
+    // 🔹 LÓGICA DEL QUIZ (versión básica)
     const form = document.getElementById("quizForm");
-    const result = document.getElementById("resultado");
+    const resultBox = document.getElementById("resultado");
 
     form.addEventListener("submit", e => {
       e.preventDefault();
+
       const aroma = form.aroma.value;
       const ocasion = form.ocasion.value;
 
-      let recomendacion = "";
-      if (aroma === "dulce" && ocasion === "noche") recomendacion = "AMAVI Noire — vainilla, ámbar y jazmín.";
-      else if (aroma === "fresco" && ocasion === "diario") recomendacion = "AMAVI Breeze — notas cítricas y florales.";
-      else if (aroma === "amaderado" && ocasion === "elegante") recomendacion = "AMAVI Royal — sándalo y cedro.";
-      else recomendacion = "AMAVI Essence — mezcla adaptada a tu estilo.";
+      let msg = "AMAVI Essence — mezcla adaptada a tu estilo.";
 
-      result.innerHTML = `
-        <div class="card" style="max-width:500px;margin:auto;">
+      if (aroma === "dulce" && ocasion === "noche") msg = "Fantasy / Good Girl / Cloud Ariana";
+      if (aroma === "fresco" && ocasion === "diario") msg = "Ralph / Tommy Girl / Bright Crystal";
+      if (aroma === "amaderado" && ocasion === "elegante") msg = "Oud For Glory / Asad / Erba Pura";
+
+      resultBox.innerHTML = `
+        <div class="card" style="max-width:450px;margin:auto;">
           <h3>Tu recomendación personalizada</h3>
-          <p>${recomendacion}</p>
-          <a class="btn-secondary" href="products.html">Ver perfumes similares</a>
+          <p>${msg}</p>
+          <a class="btn-secondary" href="products.html">Ver perfumes sugeridos</a>
         </div>
       `;
-      form.reset();
     });
   </script>
+
 </body>
 </html>
 
