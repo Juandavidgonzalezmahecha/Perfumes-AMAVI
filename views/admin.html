@@ -3,104 +3,148 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Administrador - AMAVI</title>
-
+  <title>Panel del Administrador - AMAVI</title>
   <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
-  <link rel="stylesheet" href="../assets/css/style.css">
+  <link href="../assets/css/style.css" rel="stylesheet" />
+  <style>
+    /* Ajustes locales para el panel */
+    .admin-grid { display: grid; grid-template-columns: 1fr 420px; gap: 24px; align-items: start; }
+    .admin-panel { background: var(--bg-2); padding: 18px; border-radius: 12px; }
+    .small { font-size: 13px; color: var(--muted); }
+    .status-badge { padding:6px 10px; border-radius:8px; font-weight:600; }
+    .product-thumb { width:100%; max-height:160px; object-fit:cover; border-radius:8px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; }
+    .muted { color:var(--muted); font-size:13px; }
+    input[type="text"], input[type="number"], textarea { width:100%; }
+  </style>
 </head>
-
 <body>
+  <!-- NAVBAR -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="../index.html">AMAVI</a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="../index.html">Inicio</a></li>
+          <li><a href="products.html">Catálogo</a></li>
+          <li><a href="personalizar.html">Personalizar</a></li>
+          <li><a href="admin.html" class="active">Administrador</a></li>
+          <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
+          <li id="user-info"></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="../index.html">AMAVI</a>
-    <nav class="main-nav">
-      <ul>
-        <li><a href="../index.html">Inicio</a></li>
-        <li><a href="products.html">Catálogo</a></li>
-        <li><a href="personalizar.html">Personalizar</a></li>
-        <li><a class="active" href="admin.html">Admin</a></li>
-        <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
+  <!-- CONTENIDO -->
+  <main class="wrap" style="padding:32px 0;">
+    <h2 class="center">Panel del Administrador</h2>
+    <p class="center text-muted">Gestiona productos, inventario, pedidos y usuarios.</p>
 
-<main class="wrap" style="padding:32px 0;">
+    <div class="admin-grid" style="margin-top:24px;">
+      <!-- LEFT: FORMULARIO, BUSCADOR, LISTA -->
+      <div>
+        <!-- FORM: AGREGAR / EDITAR PRODUCTO -->
+        <section class="admin-panel">
+          <h3>Agregar / Editar producto</h3>
+          <form id="addProductForm">
+            <!-- hidden edit id not necessary in UI; script uses push/update by id -->
+            <label>Nombre</label>
+            <input id="name" name="name" type="text" required />
 
-  <h2 class="center">Panel del Administrador</h2>
+            <label>Descripción</label>
+            <input id="notes" name="notes" type="text" required />
 
-  <div class="admin-grid" style="margin-top:24px;">
+            <label>Aroma</label>
+            <input id="aroma" name="aroma" type="text" placeholder="ej: dulce, fresco, amaderado" required />
 
-    <!-- LEFT -->
-    <section class="admin-panel">
-      <h3>Agregar / Editar producto</h3>
-      <form id="productForm">
-        <input type="hidden" id="editId">
+            <label>Ocasión</label>
+            <input id="ocasion" name="ocasion" type="text" placeholder="ej: diario, noche, elegante" required />
 
-        <label>Nombre</label>
-        <input id="p-name" required>
+            <label>Duración</label>
+            <input id="duracion" name="duracion" type="text" placeholder="ej: suave, media, intensa" required />
 
-        <label>Descripción</label>
-        <input id="p-notes" required>
+            <label>Género</label>
+            <input id="genero" name="genero" type="text" placeholder="Hombre / Mujer / Unisex" required />
 
-        <label>Tipo</label>
-        <input id="p-type" required>
+            <label>Precio (ej: 5000)</label>
+            <input id="price" name="price" type="number" step="1" required />
 
-        <label>Precio</label>
-        <input id="p-price" type="number" required>
+            <label>URL imagen (http...)</label>
+            <input id="image" name="image" type="text" placeholder="https://..." required />
 
-        <label>URL Imagen</label>
-        <input id="p-image" required>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="btn-primary" type="submit">Guardar producto</button>
+              <button class="btn-ghost" id="resetFormBtn" type="button" onclick="this.closest('form').reset();">Limpiar</button>
+            </div>
 
-        <label>Stock (JSON)</label>
-        <input id="p-stock">
+            <p class="small" style="margin-top:10px;">
+              Nota: puedes pegar la URL pública de la imagen. Si luego subes imágenes a Storage, actualiza la URL aquí.
+            </p>
+          </form>
+        </section>
 
-        <button class="btn-primary" type="submit">Guardar</button>
-        <button class="btn-ghost" id="resetFormBtn" type="button">Limpiar</button>
-      </form>
-    </section>
+        <!-- BUSCADOR -->
+        <section class="admin-panel" style="margin-top:18px;">
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="searchInput" placeholder="Buscar productos..." style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);" />
+            <select id="typeFilter" style="padding:8px;border-radius:8px;">
+              <option value="all">Todos</option>
+              <option value="dulce">Dulce</option>
+              <option value="fresco">Fresco</option>
+              <option value="amaderado">Amaderado</option>
+            </select>
+          </div>
 
-    <section class="admin-panel">
-      <h3>Buscar</h3>
-      <input id="searchAdmin" placeholder="Buscar productos...">
-      <select id="filterType">
-        <option value="all">Todos</option>
-        <option value="dulce">Dulce</option>
-        <option value="fresco">Fresco</option>
-        <option value="amaderado">Amaderado</option>
-      </select>
+          <!-- Lista de productos -->
+          <div id="adminProducts" style="margin-top:16px;" class="row"></div>
+        </section>
 
-      <div id="productsList" class="row"></div>
-    </section>
+        <!-- PEDIDOS (opcional: el admin.js maneja orders si existen en /orders) -->
+        <section class="admin-panel" style="margin-top:18px;">
+          <h3>Pedidos recientes</h3>
+          <div id="ordersList" style="margin-top:12px;">(Aquí aparecerán los pedidos cuando el frontend cree /orders)</div>
+        </section>
+      </div>
 
-    <section class="admin-panel">
-      <h3>Pedidos recientes</h3>
-      <div id="ordersList"></div>
-    </section>
+      <!-- RIGHT: Panel rápido / métricas -->
+      <aside>
+        <section class="admin-panel">
+          <h3>Panel rápido</h3>
+          <p class="muted">Usuario actual: <strong id="adminName">—</strong></p>
+          <p class="muted">Email: <strong id="adminEmail">—</strong></p>
+          <p style="margin-top:8px;">
+            <button id="refreshBtn" class="btn-secondary">Refrescar datos</button>
+            <button id="logoutBtn" class="btn-ghost">Cerrar sesión</button>
+          </p>
+          <hr style="margin:12px 0;border-color:rgba(255,255,255,0.03)" />
+          <h4>Estadísticas</h4>
+          <p class="small">Productos: <strong id="statProducts">0</strong></p>
+          <p class="small">Pedidos totales: <strong id="statOrders">0</strong></p>
+          <p class="small">Ventas estimadas: <strong id="statRevenue">$0</strong></p>
+        </section>
+      </aside>
+    </div>
+  </main>
 
-    <!-- RIGHT -->
-    <aside class="admin-panel">
-      <h3>Panel rápido</h3>
-      <p>Admin: <strong id="adminName">—</strong></p>
-      <p>Email: <strong id="adminEmail">—</strong></p>
-      <hr>
-      <p>Productos: <strong id="statProducts">0</strong></p>
-      <p>Pedidos: <strong id="statOrders">0</strong></p>
-      <p>Ventas: <strong id="statRevenue">$0</strong></p>
-      <button id="refreshBtn" class="btn-secondary">Refrescar</button>
-      <button id="logoutBtn" class="btn-ghost">Salir</button>
-    </aside>
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h4>AMAVI</h4>
+        <p>Panel administrativo con conexión a Firebase.</p>
+      </div>
+      <div>
+        <h5>Soporte</h5>
+        <p>admin@amavi.com</p>
+      </div>
+    </div>
+  </footer>
 
-  </div>
-
-</main>
-
-<footer class="site-footer"></footer>
-
-<script type="module" src="../assets/js/admin.js"></script>
-
+  <script src="../assets/js/app.js"></script>
+  <!-- Admin logic (usa /assets/js/admin.js que importará firebase y manejará auth/DB) -->
+  <script type="module" src="../assets/js/admin.js"></script>
 </body>
 </html>
+
 
 
