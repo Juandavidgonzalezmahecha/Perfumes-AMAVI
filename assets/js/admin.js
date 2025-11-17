@@ -49,19 +49,19 @@ const productsRef = ref(db, "products");
 const ordersRef = ref(db, "orders");
 
 /* -----------------------------------
-   AUTH VERIFICAR ADMIN
+   AUTH + VALIDACIÓN ADMIN
 ----------------------------------- */
 onAuthStateChanged(auth, async user => {
   if (!user) {
     alert("Debes iniciar sesión.");
-    return location.href = "/views/login.html";
+    return location.href = "login.html";
   }
 
   const admin = await isAdmin(user.uid);
   if (!admin) {
     alert("No tienes permisos de administrador.");
     await logoutUser();
-    return location.href = "/views/login.html";
+    return location.href = "login.html";
   }
 
   adminName.textContent = user.displayName || "Admin";
@@ -72,7 +72,7 @@ onAuthStateChanged(auth, async user => {
 });
 
 /* -----------------------------------
-   GUARDAR PRODUCTO (AGREGAR / EDITAR)
+   AGREGAR / EDITAR PRODUCTO
 ----------------------------------- */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -90,11 +90,9 @@ form.addEventListener("submit", async (e) => {
   };
 
   if (editProductId) {
-    // EDITAR
     await update(ref(db, `products/${editProductId}`), productData);
     alert("Producto actualizado");
   } else {
-    // AGREGAR
     await set(push(productsRef), productData);
     alert("Producto agregado");
   }
@@ -104,7 +102,7 @@ form.addEventListener("submit", async (e) => {
 });
 
 /* -----------------------------------
-   CARGAR PRODUCTOS (Realtime)
+   CARGAR PRODUCTOS EN TIEMPO REAL
 ----------------------------------- */
 function loadProducts() {
   onValue(productsRef, (snap) => {
@@ -118,15 +116,14 @@ function loadProducts() {
 ----------------------------------- */
 function renderProducts(data) {
   const arr = Object.entries(data).map(([id, p]) => ({ id, ...p }));
-
   statProducts.textContent = arr.length;
 
-  const q = searchInput.value.toLowerCase();
-  const f = typeFilter.value;
+  const query = searchInput.value.toLowerCase();
+  const filter = typeFilter.value;
 
   const filtered = arr.filter(p => {
-    const matchName = p.name.toLowerCase().includes(q);
-    const matchType = f === "all" || p.aroma === f;
+    const matchName = p.name.toLowerCase().includes(query);
+    const matchType = filter === "all" || p.aroma.includes(filter);
     return matchName && matchType;
   });
 
@@ -154,14 +151,13 @@ function renderProducts(data) {
 }
 
 /* -----------------------------------
-   EDITAR PRODUCTO (rellena formulario)
+   EDITAR PRODUCTO
 ----------------------------------- */
 window.editProduct = async function (id) {
   const snap = await get(child(ref(db), `products/${id}`));
   if (!snap.exists()) return alert("Producto no encontrado");
 
   const p = snap.val();
-
   editProductId = id;
 
   nameInput.value = p.name;
@@ -192,16 +188,18 @@ window.toggleActive = async function (id, current) {
 };
 
 /* -----------------------------------
-   PEDIDOS (si existen)
+   CARGAR PEDIDOS
 ----------------------------------- */
 function loadOrders() {
   onValue(ordersRef, snap => {
     const data = snap.val() || {};
     const arr = Object.values(data);
+
     statOrders.textContent = arr.length;
 
     let total = 0;
     arr.forEach(o => total += o.total || 0);
+
     statRevenue.textContent = "$" + total.toLocaleString();
   });
 }
@@ -217,7 +215,6 @@ logoutBtn.addEventListener("click", async () => {
 /* -----------------------------------
    FILTROS
 ----------------------------------- */
-searchInput.addEventListener("input", () => loadProducts());
-typeFilter.addEventListener("change", () => loadProducts());
-
-
+searchInput.addEventListener("input", loadProducts);
+typeFilter.addEventListener("change", loadProducts);
+refreshBtn.addEventListener("click", loadProducts);
