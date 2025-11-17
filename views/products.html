@@ -28,6 +28,19 @@
     <h2 class="center">Catálogo de Perfumes</h2>
     <p class="center text-muted">Explora nuestras fragancias exclusivas</p>
 
+    <!-- 🔹 SELECTOR DE TAMAÑO (ML) -->
+    <div class="center" style="margin-top:20px;">
+      <label for="sizeSelector" class="text-muted" style="margin-right:8px;">
+        Selecciona el tamaño del frasco:
+      </label>
+      <select id="sizeSelector" style="padding:8px;border-radius:8px;">
+        <option value="5">5 ml - $5.000</option>
+        <option value="10">10 ml - $10.000</option>
+        <option value="50">50 ml - $30.000</option>
+        <option value="100">100 ml - $50.000</option>
+      </select>
+    </div>
+
     <div id="productGrid" class="products-grid" style="margin-top:40px;"></div>
   </main>
 
@@ -44,19 +57,28 @@
     </div>
   </footer>
 
-  <!-- 🟦 APP GENERAL (carrito) -->
+  <!-- 🟦 APP GENERAL (contador carrito, etc.) -->
   <script type="module" src="../assets/js/app.js"></script>
 
-  <!-- 🟧 LÓGICA DE PRODUCTS -->
+  <!-- 🟧 LÓGICA DE PRODUCTS: tamaño + precios dinámicos + addToCart -->
   <script type="module">
     import { db, auth, logoutUser, isAdmin } from "../assets/js/firebase.js";
-    import { addToCart } from "../assets/js/app.js";
+    import {
+      addToCart,
+      SIZE_PRICES,
+      getSelectedSize,
+      setSelectedSize,
+      updateCartCount
+    } from "../assets/js/app.js";
 
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
     const authSection = document.getElementById("auth-section");
     const grid = document.getElementById("productGrid");
+    const sizeSelector = document.getElementById("sizeSelector");
+
+    let productsData = {};
 
     /* -----------------------------------------
        🔹 CONTROL DE USUARIO Y ADMIN
@@ -84,36 +106,86 @@
       } else {
         authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
       }
+
+      // Asegurar contador de carrito correcto
+      updateCartCount();
     });
 
     /* -----------------------------------------
-       🔹 CARGAR PRODUCTOS DESDE FIREBASE
+       🔹 ESCUCHA DE PRODUCTOS EN REALTIME
     ------------------------------------------*/
-    function loadProducts() {
-      const productsRef = ref(db, "products");
+    const productsRef = ref(db, "products");
 
-      onValue(productsRef, (snap) => {
-        const data = snap.val() || {};
+    onValue(productsRef, (snap) => {
+      productsData = snap.val() || {};
+      renderProductsGrid();
+    });
 
-        grid.innerHTML = Object.entries(data)
-          .filter(([, p]) => p.active !== false)
-          .map(([id, p]) => `
-            <div class="card">
-              <img src="${p.image}" alt="${p.name}">
-              <h3>${p.name}</h3>
-              <p class="text-muted">${p.notes}</p>
-              <p class="price">$${Number(p.price).toLocaleString()}</p>
+    /* -----------------------------------------
+       🔹 RENDER GRID SEGÚN TAMAÑO SELECCIONADO
+    ------------------------------------------*/
+    function renderProductsGrid() {
+      const sizeMl = getSelectedSize();
+      const unitPrice = SIZE_PRICES[sizeMl] || 5000;
 
-              <button class="btn-primary"
-                onclick='addToCart(${JSON.stringify({ id, ...p })})'>
-                Agregar al carrito
-              </button>
-            </div>
-          `).join("");
+      // sincronizar select con el valor
+      sizeSelector.value = String(sizeMl);
+
+      const entries = Object.entries(productsData)
+        .filter(([, p]) => p.active !== false);
+
+      if (!entries.length) {
+        grid.innerHTML = `<p class="center text-muted">No hay productos disponibles.</p>`;
+        return;
+      }
+
+      grid.innerHTML = entries.map(([id, p]) => `
+        <div class="card">
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p class="text-muted">${p.notes}</p>
+          <p class="price">
+            $${unitPrice.toLocaleString()} — ${sizeMl} ml
+          </p>
+          <button class="btn-primary add-to-cart" data-id="${id}">
+            Agregar al carrito
+          </button>
+        </div>
+      `).join("");
+
+      // Asignar eventos a botones "Agregar al carrito"
+      grid.querySelectorAll(".add-to-cart").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.id;
+          const p = productsData[id];
+          const currentSize = getSelectedSize();
+          const price = SIZE_PRICES[currentSize] || 5000;
+
+          addToCart({
+            id,
+            name: p.name,
+            image: p.image,
+            sizeMl: currentSize,
+            price
+          });
+        });
       });
     }
 
-    loadProducts();
+    /* -----------------------------------------
+       🔹 CAMBIO DE TAMAÑO (ML)
+    ------------------------------------------*/
+    sizeSelector.addEventListener("change", () => {
+      const ml = Number(sizeSelector.value);
+      setSelectedSize(ml);
+      renderProductsGrid();
+    });
+
+    // Sincronizar select con lo que ya tenga guardado el usuario
+    document.addEventListener("DOMContentLoaded", () => {
+      const ml = getSelectedSize();
+      sizeSelector.value = String(ml);
+    });
   </script>
 
 </body>
