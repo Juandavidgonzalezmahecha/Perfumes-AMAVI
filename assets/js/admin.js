@@ -1,290 +1,214 @@
-// assets/js/admin.js
-import { auth, db } from "./firebase.js";
-import {
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+// ---------------------------------------------
+// admin.js — Gestión completa del panel admin
+// ---------------------------------------------
 
+import { auth, db, logoutUser, isAdmin } from "./firebase.js";
 import {
   ref,
   push,
   set,
   onValue,
-  remove,
   update,
-  child,
-  get
+  remove
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-/* ------------------------------
-   DOM ELEMENTS
---------------------------------*/
-const productForm = document.getElementById("productForm");
-const editIdInput = document.getElementById("editId");
-const pName = document.getElementById("p-name");
-const pNotes = document.getElementById("p-notes");
-const pType = document.getElementById("p-type");
-const pPrice = document.getElementById("p-price");
-const pImage = document.getElementById("p-image");
-const pStock = document.getElementById("p-stock");
-const productsList = document.getElementById("productsList");
-const searchAdmin = document.getElementById("searchAdmin");
-const filterType = document.getElementById("filterType");
-const ordersList = document.getElementById("ordersList");
-const adminName = document.getElementById("adminName");
-const adminEmail = document.getElementById("adminEmail");
-const statProducts = document.getElementById("statProducts");
-const statOrders = document.getElementById("statOrders");
-const statRevenue = document.getElementById("statRevenue");
-const refreshBtn = document.getElementById("refreshBtn");
-const resetFormBtn = document.getElementById("resetFormBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-/* ------------------------------
-   REFS
---------------------------------*/
-const productsRef = ref(db, "products");
-const ordersRef = ref(db, "orders");
+// -------------------------------
+// ELEMENTOS DEL DOM
+// -------------------------------
+const form = document.getElementById("addProductForm");
+const adminGrid = document.getElementById("adminProducts");
+const searchInput = document.getElementById("searchInput");
+const typeFilter = document.getElementById("typeFilter");
+const authSection = document.getElementById("user-info");
 
-/* ------------------------------
-   UTILS
---------------------------------*/
-function formatCurrency(n) {
-  return `$${Number(n).toLocaleString()}`;
-}
-
-function emptyForm() {
-  editIdInput.value = "";
-  pName.value = "";
-  pNotes.value = "";
-  pType.value = "";
-  pPrice.value = "";
-  pImage.value = "";
-  pStock.value = "";
-}
-
-/* ------------------------------
-   AUTH CHECK
---------------------------------*/
-onAuthStateChanged(auth, async user => {
+// -------------------------------
+// CONTROL DE ACCESO
+// -------------------------------
+onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("Debes iniciar sesión para acceder al panel administrativo.");
-    window.location.href = "/views/login.html";
+    alert("⚠️ Debes iniciar sesión para acceder al panel.");
+    window.location.href = "login.html";
     return;
   }
 
-  const roleSnap = await get(child(ref(db), `roles/${user.uid}`));
-  const role = roleSnap.exists() ? roleSnap.val() : null;
-
-  if (role !== "admin") {
-    alert("Acceso denegado.");
-    await signOut(auth);
-    window.location.href = "/views/login.html";
+  const admin = await isAdmin(user.uid);
+  if (!admin) {
+    alert("⛔ No tienes permiso para acceder a esta sección.");
+    window.location.href = "../index.html";
     return;
   }
 
-  adminName.textContent = user.displayName || "Admin";
-  adminEmail.textContent = user.email;
+  const name = user.displayName || "Administrador";
+  const photo = user.photoURL || "../assets/img/user.png";
 
-  initAdmin();
+  authSection.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="${photo}" class="user-photo">
+      <span>${name}</span>
+      <button id="logoutBtn" class="btn-ghost">Salir</button>
+    </div>
+  `;
+
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await logoutUser();
+    window.location.href = "../index.html";
+  });
+
+  loadProducts();
 });
 
-/* ------------------------------
-   INIT PANEL
---------------------------------*/
-function initAdmin() {
-  productForm.addEventListener("submit", handleSaveProduct);
-  searchAdmin.addEventListener("input", renderProductsOnce);
-  filterType.addEventListener("change", renderProductsOnce);
-  refreshBtn.addEventListener("click", () => {
-    renderProductsOnce();
-    renderOrdersOnce();
+// -------------------------------
+// CARGAR PRODUCTOS
+// -------------------------------
+function loadProducts() {
+  const productsRef = ref(db, "products");
+
+  onValue(productsRef, (snap) => {
+    const data = snap.val() || {};
+    const searchTerm = searchInput.value.toLowerCase();
+    const filterType = typeFilter.value;
+
+    const list = Object.entries(data)
+      .map(([id, p]) => ({ id, ...p }))
+      .filter((p) => {
+        const matchName = p.name.toLowerCase().includes(searchTerm);
+        const matchType =
+          filterType === "all" || p.aroma?.toLowerCase() === filterType;
+
+        return matchName && matchType;
+      });
+
+    adminGrid.innerHTML = list.length
+      ? list
+          .map(
+            (p) => `
+        <div class="product-card">
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>${p.notes}</p>
+          <small>${p.aroma} • ${p.ocasion} • ${p.duracion}</small>
+          <p class="price">$${Number(p.price).toLocaleString()}</p>
+
+          <div class="center" style="margin-top:10px;display:flex;gap:8px;">
+            <button class="btn-ghost" onclick="editProduct('${p.id}')">Editar</button>
+            <button class="btn-ghost" onclick="deleteProduct('${p.id}')">Eliminar</button>
+          </div>
+        </div>
+      `
+          )
+          .join("")
+      : "<p class='center text-muted'>No se encontraron productos.</p>";
   });
-
-  resetFormBtn.addEventListener("click", emptyForm);
-
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "/index.html";
-  });
-
-  renderProductsOnce();
-  renderOrdersOnce();
 }
 
-/* ------------------------------
-   SAVE / EDIT PRODUCT
---------------------------------*/
-async function handleSaveProduct(ev) {
-  ev.preventDefault();
+// -------------------------------
+// AGREGAR PRODUCTO
+// -------------------------------
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
   const data = {
-    name: pName.value.trim(),
-    notes: pNotes.value.trim(),
-    type: pType.value.trim().toLowerCase(),
-    price: Number(pPrice.value || 0),
-    image: pImage.value.trim(),
+    name: form.name.value.trim(),
+    notes: form.notes.value.trim(),
+    aroma: form.aroma.value.trim(),
+    ocasion: form.ocasion.value.trim(),
+    duracion: form.duracion.value.trim(),
+    genero: form.genero.value.trim(),
+    price: Number(form.price.value),
+    image: form.image.value.trim(),
     active: true
   };
 
-  try {
-    data.stock = pStock.value ? JSON.parse(pStock.value) : {};
-  } catch {
-    alert("Stock inválido. Usa JSON válido.");
-    return;
-  }
+  const productsRef = ref(db, "products");
+  await push(productsRef, data);
 
-  const id = editIdInput.value;
+  alert("✅ Producto agregado");
+  form.reset();
+});
 
-  if (id) {
-    await update(child(ref(db), `products/${id}`), data);
-    alert("Producto actualizado");
-  } else {
-    const newRef = push(productsRef);
-    await set(newRef, data);
-    alert("Producto creado");
-  }
+// -------------------------------
+// ELIMINAR
+// -------------------------------
+window.deleteProduct = async (id) => {
+  if (!confirm("¿Eliminar este producto?")) return;
+  await remove(ref(db, "products/" + id));
+};
 
-  emptyForm();
-  renderProductsOnce();
-}
+// -------------------------------
+// EDITAR
+// -------------------------------
+window.editProduct = (id) => {
+  const card = document.querySelector(`#edit-${id}`);
 
-/* ------------------------------
-   RENDER PRODUCTS
---------------------------------*/
-function renderProductsOnce() {
-  get(productsRef).then(snap => {
-    renderProducts(snap.exists() ? snap.val() : {});
-  });
-}
+  const productRef = ref(db, "products/" + id);
 
-function renderProducts(data) {
-  const arr = Object.entries(data || {}).map(([id, p]) => ({ id, ...p }));
+  onValue(productRef, (snap) => {
+    const p = snap.val();
+    if (!p) return;
 
-  const q = (searchAdmin.value || "").toLowerCase();
-  const t = filterType.value;
+    adminGrid.innerHTML = `
+      <div class="form-card" style="max-width:400px;margin:auto;">
+        <h3>Editar Perfume</h3>
+        
+        <label>Nombre</label>
+        <input id="edit-name" value="${p.name}">
 
-  const filtered = arr.filter(p => {
-    const matchName = p.name.toLowerCase().includes(q);
-    const matchType = t === "all" || p.type === t;
-    return matchName && matchType;
-  });
+        <label>Descripción</label>
+        <input id="edit-notes" value="${p.notes}">
 
-  statProducts.textContent = arr.length;
+        <label>Aroma</label>
+        <input id="edit-aroma" value="${p.aroma}">
 
-  productsList.innerHTML = filtered.length
-    ? filtered.map(p => `
-      <div class="product-card" style="width:100%;max-width:420px;">
-        <img class="product-thumb" src="${p.image}" alt="${p.name}" />
-        <h3>${p.name}</h3>
-        <p class="muted">${p.notes}</p>
-        <p class="small">Tipo: ${p.type}</p>
-        <p class="price">${formatCurrency(p.price)}</p>
-        <p class="small">Stock: ${JSON.stringify(p.stock || {})}</p>
+        <label>Ocasión</label>
+        <input id="edit-ocasion" value="${p.ocasion}">
 
-        <div style="margin-top:8px;display:flex;gap:8px;">
-          <button class="btn-primary" onclick="window.admin_editProduct('${p.id}')">Editar</button>
-          <button class="btn-ghost" onclick="window.admin_toggleActive('${p.id}')">
-            ${p.active === false ? "Activar" : "Desactivar"}
-          </button>
-          <button class="btn-ghost" onclick="window.admin_deleteProduct('${p.id}')">Eliminar</button>
+        <label>Duración</label>
+        <input id="edit-duracion" value="${p.duracion}">
+
+        <label>Género</label>
+        <input id="edit-genero" value="${p.genero}">
+
+        <label>Precio</label>
+        <input id="edit-price" type="number" value="${p.price}">
+
+        <label>Imagen (URL)</label>
+        <input id="edit-image" value="${p.image}">
+
+        <div class="center" style="margin-top:16px;display:flex;gap:10px;">
+          <button class="btn-primary" onclick="saveEdit('${id}')">Guardar</button>
+          <button class="btn-ghost" onclick="loadProducts()">Cancelar</button>
         </div>
       </div>
-    `).join("")
-    : `<p class="center text-muted">No hay productos.</p>`;
-}
-
-/* ------------------------------
-   EDIT PRODUCT
---------------------------------*/
-window.admin_editProduct = async function (id) {
-  const snap = await get(child(ref(db), `products/${id}`));
-  if (!snap.exists()) return alert("Producto no encontrado");
-
-  const p = snap.val();
-
-  editIdInput.value = id;
-  pName.value = p.name;
-  pNotes.value = p.notes;
-  pType.value = p.type;
-  pPrice.value = p.price;
-  pImage.value = p.image;
-  pStock.value = JSON.stringify(p.stock || {});
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-/* ------------------------------
-   DELETE PRODUCT
---------------------------------*/
-window.admin_deleteProduct = async function (id) {
-  if (!confirm("Eliminar producto?")) return;
-  await remove(child(ref(db), `products/${id}`));
-  alert("Producto eliminado");
-  renderProductsOnce();
-};
-
-/* ------------------------------
-   TOGGLE ACTIVE
---------------------------------*/
-window.admin_toggleActive = async function (id) {
-  const snap = await get(child(ref(db), `products/${id}`));
-  if (!snap.exists()) return;
-  const current = snap.val().active;
-
-  await update(child(ref(db), `products/${id}`), { active: !current });
-
-  renderProductsOnce();
-};
-
-/* ------------------------------
-   ORDERS
---------------------------------*/
-function renderOrdersOnce() {
-  get(ordersRef).then(snap => {
-    renderOrders(snap.exists() ? snap.val() : {});
+    `;
   });
-}
-
-function renderOrders(data) {
-  const arr = Object.entries(data || {}).map(([id, o]) => ({ id, ...o }))
-    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-  statOrders.textContent = arr.length;
-
-  let revenue = 0;
-  arr.forEach(o => revenue += (o.total || 0));
-  statRevenue.textContent = formatCurrency(revenue);
-
-  ordersList.innerHTML = arr.length
-    ? arr.map(o => `
-      <div class="product-card">
-        <strong>Pedido ${o.id}</strong>
-        <p class="small muted">${o.email}</p>
-        <p class="small muted">Total: ${formatCurrency(o.total)}</p>
-
-        <select id="status-${o.id}">
-          <option value="pendiente">pendiente</option>
-          <option value="preparando">preparando</option>
-          <option value="enviado">enviado</option>
-          <option value="entregado">entregado</option>
-        </select>
-
-        <button class="btn-primary" onclick="window.admin_changeOrderStatus('${o.id}')">Guardar</button>
-        <button class="btn-ghost" onclick="window.admin_deleteOrder('${o.id}')">Eliminar</button>
-      </div>
-    `).join("")
-    : `<p>No hay pedidos.</p>`;
-}
-
-window.admin_changeOrderStatus = async function (id) {
-  const sel = document.getElementById(`status-${id}`);
-  await update(child(ref(db), `orders/${id}`), { status: sel.value });
-  alert("Estado actualizado");
 };
 
-window.admin_deleteOrder = async function (id) {
-  if (!confirm("¿Eliminar pedido?")) return;
-  await remove(child(ref(db), `orders/${id}`));
-  alert("Pedido eliminado");
-  renderOrdersOnce();
+// -------------------------------
+// GUARDAR EDICIÓN
+// -------------------------------
+window.saveEdit = async (id) => {
+  const updated = {
+    name: document.getElementById("edit-name").value.trim(),
+    notes: document.getElementById("edit-notes").value.trim(),
+    aroma: document.getElementById("edit-aroma").value.trim(),
+    ocasion: document.getElementById("edit-ocasion").value.trim(),
+    duracion: document.getElementById("edit-duracion").value.trim(),
+    genero: document.getElementById("edit-genero").value.trim(),
+    price: Number(document.getElementById("edit-price").value),
+    image: document.getElementById("edit-image").value.trim()
+  };
+
+  await update(ref(db, "products/" + id), updated);
+
+  alert("✅ Cambios guardados");
+  loadProducts();
 };
+
+// -------------------------------
+// FILTROS
+// -------------------------------
+searchInput.addEventListener("input", loadProducts);
+typeFilter.addEventListener("change", loadProducts);
+
