@@ -50,10 +50,10 @@
   <!-- 🟧 LÓGICA DE PRODUCTS -->
   <script type="module">
     import { db, auth, logoutUser, isAdmin } from "../assets/js/firebase.js";
+    import { addToCart } from "../assets/js/app.js";
+
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { ref, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
-
-    import { addToCart } from "../assets/js/app.js";
 
     const authSection = document.getElementById("auth-section");
     const grid = document.getElementById("productGrid");
