@@ -43,7 +43,9 @@ export const db = getDatabase(app);
 // -----------------------------
 const ADMINS = [
   "est.juand.gonzalezm@unimilitar.edu.co",
-  "Cristianj244488@gmail.com"
+  "Cristianj244488@gmail.com",
+  "est.cristian.ferna1@unimilitar.edu.co ",
+  "est.eybar.viasus@unimilitar.edu.co "
 ];
 
 // -----------------------------
