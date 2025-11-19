@@ -7,206 +7,253 @@
   <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
+<!-- BOTÓN DE WHATSAPP FIJO -->
+<a class="whatsapp-btn" target="_blank"
+   href="https://wa.me/573238000910">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg">
+</a>
+
+<style>
+.whatsapp-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #25d366;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  cursor: pointer;
+}
+.whatsapp-btn img {
+  width: 35px;
+}
+</style>
 
 <body>
 
-  <header class="site-header">
-    <div class="wrap">
-      <a class="brand" href="../index.html">AMAVI</a>
-      <nav class="main-nav">
-        <ul id="nav-links">
-          <li><a href="../index.html">Inicio</a></li>
-          <li><a href="products.html">Catálogo</a></li>
-          <li><a href="personalizar.html">Personalizar</a></li>
-          <li><a href="cart.html" class="active">🛒 <span id="cart-count">0</span></a></li>
-          <li id="auth-section"></li>
-        </ul>
-      </nav>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../index.html">AMAVI</a>
+    <nav class="main-nav">
+      <ul id="nav-links">
+        <li><a href="../index.html">Inicio</a></li>
+        <li><a href="products.html">Catálogo</a></li>
+        <li><a href="personalizar.html">Personalizar</a></li>
+        <li><a href="cart.html" class="active">🛒 <span id="cart-count">0</span></a></li>
+        <li id="auth-section"></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" style="padding:80px 0;">
+  <h2 class="center">Tu carrito de compras</h2>
+  <p class="center text-muted">Revisa tus productos antes de continuar.</p>
+
+  <div id="cartContainer"></div>
+
+  <div class="center" style="margin-top:40px;">
+    <button id="clearCart" class="btn-ghost">Vaciar carrito</button>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <h4>AMAVI</h4>
+      <p>Perfumes artesanales y personalizados.</p>
     </div>
-  </header>
-
-  <main class="wrap" style="padding:80px 0;">
-    <h2 class="center">Tu carrito de compras</h2>
-    <p class="center text-muted">Revisa tus productos antes de continuar.</p>
-
-    <div id="cartContainer"></div>
-
-    <div class="center" style="margin-top:40px;">
-      <button id="clearCart" class="btn-ghost">Vaciar carrito</button>
+    <div>
+      <h5>Contacto</h5>
+      <p>hola@amavi.com</p>
     </div>
-  </main>
+  </div>
+</footer>
 
-  <footer class="site-footer">
-    <div class="wrap footer-grid">
-      <div>
-        <h4>AMAVI</h4>
-        <p>Perfumes artesanales y personalizados.</p>
-      </div>
-      <div>
-        <h5>Contacto</h5>
-        <p>hola@amavi.com</p>
-      </div>
-    </div>
-  </footer>
+<!-- 🔥 SCRIPT CORREGIDO Y FUNCIONAL -->
+<script type="module">
+  import { auth, logoutUser, db } from "../assets/js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+  import { getCart, saveCart, updateCartCount } from "../assets/js/app.js";
+  import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
-  <!-- 🔹 SCRIPT CARRITO + FIREBASE -->
-  <script type="module">
-    import { auth, logoutUser, db } from "../assets/js/firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import { getCart, saveCart, updateCartCount } from "../assets/js/app.js";
-    import { ref, push, set } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+  const authSection = document.getElementById("auth-section");
+  const cartContainer = document.getElementById("cartContainer");
+  const clearBtn = document.getElementById("clearCart");
+  let currentUser = null;
 
-    const authSection = document.getElementById("auth-section");
-    const cartContainer = document.getElementById("cartContainer");
-    const clearBtn = document.getElementById("clearCart");
+  /* ---------------------------
+      LOGIN HEADER
+  ----------------------------*/
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
 
-    let currentUser = null;
-
-    /* -----------------------------------------
-        🔹 CONTROL LOGIN
-    ------------------------------------------*/
-    onAuthStateChanged(auth, user => {
-      currentUser = user;
-
-      if (user) {
-        const name = user.displayName || "Usuario";
-        const photo = user.photoURL || "../assets/img/user.png";
-
-        authSection.innerHTML = `
-          <div style="display:flex;align-items:center;gap:10px;">
-            <img src="${photo}" class="user-photo">
-            <span>${name}</span>
-            <button id="logoutBtn" class="btn-ghost">Salir</button>
-          </div>
-        `;
-
-        document.getElementById("logoutBtn").addEventListener("click", async () => {
-          await logoutUser();
-          window.location.href = "../index.html";
-        });
-
-      } else {
-        authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
-      }
-
-      updateCartCount();
-    });
-
-
-    /* -----------------------------------------
-        🔹 RENDER CARRITO
-    ------------------------------------------*/
-    function renderCart() {
-      const cart = getCart();
-
-      if (cart.length === 0) {
-        cartContainer.innerHTML = "<p class='center text-muted'>Tu carrito está vacío.</p>";
-        updateCartCount();
-        return;
-      }
-
-      let total = 0;
-
-      cartContainer.innerHTML = `
-        <div class="products-grid">
-          ${cart.map(item => {
-            const subtotal = item.price * item.qty;
-            total += subtotal;
-            return `
-              <div class="card center">
-                <img src="${item.image}" alt="${item.name}">
-                <h3>${item.name}</h3>
-                <p>Tamaño: ${item.sizeMl} ml</p>
-                <p>Precio por frasco: $${item.price.toLocaleString()}</p>
-                <p>Cantidad: ${item.qty}</p>
-                <p>Subtotal: $${subtotal.toLocaleString()}</p>
-
-                <button class="btn-ghost" onclick="removeItem('${item.key}')">Eliminar</button>
-              </div>
-            `;
-          }).join("")}
-        </div>
-
-        <div class="center" style="margin-top:30px;">
-          <h3>Total: $${total.toLocaleString()}</h3>
-          <button class="btn-primary" onclick="finalizarCompra()">Finalizar compra</button>
-        </div>
+    if (user) {
+      authSection.innerHTML = `
+        <button id="logoutBtn" class="btn-ghost">Salir</button>
       `;
-
-      updateCartCount();
-    }
-
-
-    /* -----------------------------------------
-        🔹 ELIMINAR PRODUCTO (POR key)
-    ------------------------------------------*/
-    window.removeItem = key => {
-      let cart = getCart().filter(i => i.key !== key);
-      saveCart(cart);
-      renderCart();
-    };
-
-
-    /* -----------------------------------------
-        🔹 FINALIZAR COMPRA (GUARDAR EN FIREBASE)
-    ------------------------------------------*/
-    window.finalizarCompra = async () => {
-      const cart = getCart();
-
-      if (cart.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
-      }
-
-      if (!currentUser) {
-        alert("Debes iniciar sesión para realizar la compra.");
-        window.location.href = "login.html";
-        return;
-      }
-
-      const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
-      const orderRef = push(ref(db, "orders"));
-
-      const orderData = {
-        userId: currentUser.uid,
-        customerName: currentUser.displayName || "Cliente",
-        email: currentUser.email,
-        createdAt: Date.now(),
-        status: "pendiente",
-        total: total,
-        items: {},
+      document.getElementById("logoutBtn").onclick = async () => {
+        await logoutUser();
+        window.location.href = "../index.html";
       };
 
-      cart.forEach(item => {
-        orderData.items[item.key] = {
-          id: item.id,
-          name: item.name,
-          sizeMl: item.sizeMl,
-          price: item.price,
-          qty: item.qty,
-          image: item.image
-        };
-      });
+    } else {
+      authSection.innerHTML = `<a href="login.html" class="btn-primary">Ingresar</a>`;
+    }
 
-      await set(orderRef, orderData);
+    updateCartCount();
+  });
 
-      alert("🎉 Tu pedido fue registrado con éxito.");
-      saveCart([]);
-      renderCart();
+  /* ---------------------------
+      RENDER CARRITO
+  ----------------------------*/
+  function renderCart() {
+    const cart = getCart();
+
+    if (cart.length === 0) {
+      cartContainer.innerHTML = `<p class="center text-muted">Tu carrito está vacío.</p>`;
+      updateCartCount();
+      return;
+    }
+
+    let total = 0;
+
+    cartContainer.innerHTML = `
+      <div class="products-grid">
+        ${cart.map(item => {
+          const subtotal = item.price * item.qty;
+          total += subtotal;
+          return `
+            <div class="card center">
+              <img src="${item.image}" alt="${item.name}">
+              <h3>${item.name}</h3>
+              <p>Tamaño: ${item.sizeMl} ml</p>
+              <p>Precio por frasco: $${item.price.toLocaleString()}</p>
+              <p>Cantidad: ${item.qty}</p>
+              <p>Subtotal: $${subtotal.toLocaleString()}</p>
+
+              <button class="btn-ghost" onclick="removeItem('${item.key}')">
+                Eliminar
+              </button>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="center" style="margin-top:30px;">
+        <h3>Total: $${total.toLocaleString()}</h3>
+        <button class="btn-primary" onclick="finalizarCompra()">Finalizar compra</button>
+      </div>
+    `;
+
+    updateCartCount();
+  }
+
+  /* ---------------------------
+      ELIMINAR ITEM
+  ----------------------------*/
+  window.removeItem = key => {
+    let cart = getCart().filter(i => i.key !== key);
+    saveCart(cart);
+    renderCart();
+  };
+
+  /* ---------------------------
+      MOSTRAR FACTURA
+  ----------------------------*/
+  function mostrarFactura(id, factura) {
+    cartContainer.innerHTML = `
+      <div class="invoice center">
+        <h2>Factura #${id}</h2>
+        <p><strong>Cliente:</strong> ${factura.customerName}</p>
+        <p><strong>Email:</strong> ${factura.email}</p>
+        <p><strong>Fecha:</strong> ${new Date(factura.createdAt).toLocaleString()}</p>
+
+        <h3>Productos:</h3>
+        <ul style="list-style:none;padding:0;">
+          ${Object.values(factura.items).map(item => `
+            <li>
+              ${item.name} (${item.sizeMl} ml) x${item.qty}
+              — $${(item.price * item.qty).toLocaleString()}
+            </li>
+          `).join("")}
+        </ul>
+
+        <h2>Total pagado: $${factura.total.toLocaleString()}</h2>
+
+        <button onclick="window.location.href='../index.html'" 
+                class="btn-primary" 
+                style="margin-top:20px;">
+          Volver al inicio
+        </button>
+      </div>
+    `;
+  }
+
+  /* ---------------------------
+      FINALIZAR COMPRA
+  ----------------------------*/
+  window.finalizarCompra = async () => {
+    const cart = getCart();
+
+    if (cart.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+
+    if (!currentUser) {
+      alert("Debes iniciar sesión para realizar la compra.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+    const orderRef = push(ref(db, "orders"));
+
+    const orderData = {
+      userId: currentUser.uid,
+      customerName: currentUser.displayName || "Cliente",
+      email: currentUser.email,
+      createdAt: Date.now(),
+      status: "pendiente",
+      total: total,
+      items: {}
     };
 
-
-    /* -----------------------------------------
-        🔹 VACIAR CARRITO
-    ------------------------------------------*/
-    clearBtn.addEventListener("click", () => {
-      saveCart([]);
-      renderCart();
+    cart.forEach(item => {
+      orderData.items[item.key] = {
+        id: item.id,
+        name: item.name,
+        sizeMl: item.sizeMl,
+        price: item.price,
+        qty: item.qty,
+        image: item.image
+      };
     });
 
-    document.addEventListener("DOMContentLoaded", renderCart);
-  </script>
+    await set(orderRef, orderData);
+
+    saveCart([]); // vaciar carrito
+
+    mostrarFactura(orderRef.key, orderData);
+  };
+
+  /* ---------------------------
+      VACIAR CARRITO
+  ----------------------------*/
+  clearBtn.addEventListener("click", () => {
+    saveCart([]);
+    renderCart();
+  });
+
+  document.addEventListener("DOMContentLoaded", renderCart);
+</script>
 
 </body>
 </html>
