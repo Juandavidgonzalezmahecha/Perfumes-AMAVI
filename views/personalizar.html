@@ -7,6 +7,7 @@
   <link rel="icon" href="../assets/img/LOGOAMAVI.png" />
   <link href="../assets/css/style.css" rel="stylesheet" />
 </head>
+
 <!-- BOTÓN DE WHATSAPP FIJO -->
 <a class="whatsapp-btn" target="_blank"
    href="https://wa.me/573238000910">
@@ -43,7 +44,7 @@
         <ul id="nav-links">
           <li><a href="../index.html">Inicio</a></li>
           <li><a href="products.html">Catálogo</a></li>
-          <li><a href="personalizar.html" class="active">Personalizar</a></li>
+          <li><a href="personalizar.html" class="active">Recomendar</a></li>
           <li><a href="cart.html">🛒 <span id="cart-count">0</span></a></li>
           <li id="auth-section"></li>
         </ul>
@@ -56,29 +57,22 @@
     <p class="center text-muted">Responde algunas preguntas y encuentra tu aroma perfecto.</p>
 
     <form id="quizForm" class="form-card" style="max-width:600px;margin:40px auto;">
-      <label>1️⃣ ¿Prefieres aromas dulces o frescos?</label>
-      <select name="aroma">
-        <option value="dulce">Dulces</option>
-        <option value="fresco">Frescos</option>
-        <option value="amaderado">Amaderados</option>
-      </select>
 
-      <label>2️⃣ ¿Para qué ocasión usarías el perfume?</label>
+      <!-- PREGUNTA: OCASIÓN -->
+      <label>1️⃣ ¿A qué ocasión te presentas?</label>
       <select name="ocasion">
-        <option value="diario">Uso diario</option>
-        <option value="elegante">Eventos elegantes</option>
-        <option value="noche">Salidas nocturnas</option>
-      </select>
-
-      <label>3️⃣ ¿Qué tipo de duración prefieres?</label>
-      <select name="duracion">
-        <option value="suave">Suave</option>
-        <option value="media">Media</option>
-        <option value="intensa">Intensa</option>
+        <option value="dia">Día a día</option>
+        <option value="noche">Noche</option>
+        <option value="citas">Citas Especiales</option>
+        <option value="fiestas">Fiestas y Celebraciones</option>
+        <option value="trabajo">Trabajo / Oficina</option>
+        <option value="deporte">Deporte / Gym</option>
+        <option value="verano">Verano / Clima Cálido</option>
+        <option value="invierno">Invierno / Clima Frío</option>
       </select>
 
       <div class="center" style="margin-top:20px;">
-        <button type="submit" class="btn-primary">Generar mi perfume</button>
+        <button type="submit" class="btn-primary">Recomendaciones</button>
       </div>
     </form>
 
@@ -89,21 +83,24 @@
     <div class="wrap footer-grid">
       <div>
         <h4>AMAVI</h4>
-        <p>Perfumes personalizados para cada esencia.</p>
+        <p>Perfumes artesanales y personalizados.</p>
       </div>
       <div>
         <h5>Contacto</h5>
         <p>hola@amavi.com</p>
       </div>
     </div>
+    <p class="center text-muted" style="margin-top:20px;">&copy; 2025 Perfumes AMAVI — Todos los derechos reservados</p>
   </footer>
 
+  <!-- FIREBASE + QUIZ -->
   <script type="module">
     import { auth, logoutUser } from "../assets/js/firebase.js";
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
     const authSection = document.getElementById("auth-section");
 
+    // ----- AUTH -----
     onAuthStateChanged(auth, user => {
       if (user) {
         const name = user.displayName || "Usuario";
@@ -126,27 +123,39 @@
       }
     });
 
-    // 🔹 LÓGICA DEL QUIZ (versión básica)
+    // ----- QUIZ -----
     const form = document.getElementById("quizForm");
     const resultBox = document.getElementById("resultado");
 
-    form.addEventListener("submit", e => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const aroma = form.aroma.value;
       const ocasion = form.ocasion.value;
-
       let msg = "AMAVI Essence — mezcla adaptada a tu estilo.";
 
-      if (aroma === "dulce" && ocasion === "noche") msg = "Fantasy / Good Girl / Cloud Ariana";
-      if (aroma === "fresco" && ocasion === "diario") msg = "Ralph / Tommy Girl / Bright Crystal";
-      if (aroma === "amaderado" && ocasion === "elegante") msg = "Oud For Glory / Asad / Erba Pura";
+      // Recomendaciones según ocasión
+      if (ocasion === "noche")
+        msg = "Recomendados: Lattafa Asad, 9pm, Valentine Born in Roma, 212 VIP Black, Ceori Pasión, Coco Chanel";
+      if (ocasion === "dia")
+        msg = "Recomendados: Acqua Di Gio, Cloud Ariana Grande, Lacoste Blanc, Tommy Men, Tommy Girl, Polo Blue, Ralph, Issey Miyake Men, Issey Miyake Mujer";
+      if (ocasion === "citas")
+        msg = "Recomendados:Good Girl, Oud For Glory, Santal 33, Erba Pura, JPG Le Male";
+      if (ocasion === "fiestas")
+        msg = "Recomendados: One Million, Bhaarara King, JPG Scandal Men, Invictus, Bright Crystal, Khamrah, Khamrah Qahwa";
+      if (ocasion === "trabajo")
+        msg = "Recomendados: Versace Eros Men, Versace Eros Energy, Versace Eros Woman (Eros pour Femme), Nautica Voyage, Dorsay";
+      if (ocasion === "deporte")
+        msg = "Recomendados: Acqua Di Gio, Lacoste Blanc, Nautica Voyage, Invictus";
+      if (ocasion === "verano")
+        msg = "Recomendados: Acqua Di Gio, Nautica Voyage, Ralph, Bright Crystal";
+      if (ocasion === "invierno")
+        msg = "Recomendados: Lattafa Asad, 212 VIP Black, One Million, Oud For Glory";
 
       resultBox.innerHTML = `
         <div class="card" style="max-width:450px;margin:auto;">
           <h3>Tu recomendación personalizada</h3>
           <p>${msg}</p>
-          <a class="btn-secondary" href="products.html">Ver perfumes sugeridos</a>
+          
         </div>
       `;
     });
@@ -154,6 +163,3 @@
 
 </body>
 </html>
-
-
-
